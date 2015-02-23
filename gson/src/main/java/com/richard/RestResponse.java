@@ -46,7 +46,7 @@ public class RestResponse<T> {
     }
 
     public static class CTMResponse {
-        boolean status;
+        boolean success;
         String message;
         int errorCode;
         String errorData;
@@ -55,15 +55,15 @@ public class RestResponse<T> {
 
         }
 
-        public CTMResponse(boolean status, String message, int errorCode, String errorData) {
-            this.status = status;
+        public CTMResponse(boolean success, String message, int errorCode, String errorData) {
+            this.success = success;
             this.message = message;
             this.errorCode = errorCode;
             this.errorData = errorData;
         }
 
-        public boolean isStatus() {
-            return status;
+        public boolean isSuccessful() {
+            return success;
         }
 
         public String getMessage() {
