@@ -22,10 +22,8 @@ public class UserRestResponseConverter implements JsonDeserializer<RestResponse<
 
         int errorCode = 0;
         JsonElement errorElem = respObj.get("c");
-       /* if (errorElem != JsonNull.INSTANCE) {
-            errorCode = errorElem.getAsInt();
-        }*/
-        if(!errorElem.isJsonNull())
+        //for some reason, the error code is a json object if it does not exist.
+        if (!errorElem.isJsonNull())
             errorCode = errorElem.getAsInt();
         String message = respObj.get("m").getAsString();
         String errorData = respObj.get("d").getAsString();
