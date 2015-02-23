@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 public class MainActivityTest {
 
     Gson gson;
-    String jsonContent;
 
     @Before
     public void setup() {
@@ -64,5 +63,39 @@ public class MainActivityTest {
         assertTrue(restResponse.getResponse().getErrorCode() == 3010);
         assertTrue(!restResponse.getResponse().isSuccessful());
         //assertTrue(restResponse.getErrors().size() == 2);
+    }
+
+    @Test
+    public void testResponseWithSingleError() throws IOException {
+        String fileName = "src/main/resources/response_with_single_error.json";
+        Type userType = new TypeToken<RestResponse<User>>() {
+        }.getType();
+        String fileContent = readFile(fileName);
+        assertNotNull(fileContent);
+
+        RestResponse<User> restResponse = gson.fromJson(fileContent, userType);
+        assertNotNull(restResponse);
+        assertTrue(restResponse.getResponse() != null);
+        assertTrue(restResponse.getResponse().getMessage().equals(""));
+        assertTrue(restResponse.getResponse().getErrorCode() == 2001);
+        assertTrue(!restResponse.getResponse().isSuccessful());
+        assertTrue(restResponse.getErrors().size() == 1);
+    }
+
+    @Test
+    public void testResponseWithSingleErrorWithMessage() throws IOException {
+        String fileName = "src/main/resources/response_with_single_error_2.json";
+        Type userType = new TypeToken<RestResponse<User>>() {
+        }.getType();
+        String fileContent = readFile(fileName);
+        assertNotNull(fileContent);
+
+        RestResponse<User> restResponse = gson.fromJson(fileContent, userType);
+        assertNotNull(restResponse);
+        assertTrue(restResponse.getResponse() != null);
+        assertTrue(restResponse.getResponse().getMessage().equals("The user name is already in use"));
+        assertTrue(restResponse.getResponse().getErrorCode() == 3013);
+        assertTrue(!restResponse.getResponse().isSuccessful());
+        assertTrue(restResponse.getErrors().size() == 1);
     }
 }
