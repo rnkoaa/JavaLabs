@@ -1,0 +1,27 @@
+{
+  "resp": {
+    "s": false,
+    "c": 3010,
+    "m": "Not logged in",
+    "d": ""
+  },
+  "data": null,
+  "e": [
+    {
+      "c": 2001,
+      "m": "The parameter 'data' is required for this service"
+    },
+    {
+      "c": 2001,
+      "m": "The parameter 'skey' is required for this service"
+    },
+    {
+      "c": 2001,
+      "m": "The parameter 'did' is required for this service"
+    },
+    {
+      "c": 3010,
+      "m": "Not logged in"
+    }
+  ]
+}

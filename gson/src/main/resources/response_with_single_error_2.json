@@ -1,0 +1,15 @@
+{
+  "resp": {
+    "s": false,
+    "c": 3013,
+    "m": "The user name is already in use",
+    "d": ""
+  },
+  "data": null,
+  "e": [
+    {
+      "c": 3013,
+      "m": "The user name is already in use"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "resp": {
+    "s": false,
+    "c": 2001,
+    "m": "",
+    "d": ""
+  },
+  "data": null,
+  "e": [
+    {
+      "c": 2001,
+      "m": "The parameter 'did' is required for this service"
+    }
+  ]
+}
