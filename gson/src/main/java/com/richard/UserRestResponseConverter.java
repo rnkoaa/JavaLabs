@@ -1,7 +1,6 @@
 package com.richard;
 
 import com.google.gson.*;
-import com.google.gson.annotations.JsonAdapter;
 import com.richard.model.User;
 
 import java.lang.reflect.Type;
