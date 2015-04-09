@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "id": "7",
+      "url": "http://localhost:8182/runtime/process-instances/7",
+      "businessKey": "myBusinessKey",
+      "suspended": false,
+      "processDefinitionUrl": "http://localhost:8182/repository/process-definitions/processOne%3A1%3A4",
+      "activityId": "processTask",
+      "tenantId": null
+    },
+    {
+      "id": "7",
+      "url": "http://localhost:8182/runtime/process-instances/7",
+      "businessKey": "myBusinessKey",
+      "suspended": false,
+      "processDefinitionUrl": "http://localhost:8182/repository/process-definitions/processOne%3A1%3A4",
+      "activityId": "processTask",
+      "tenantId": null
+    }
+  ],
+  "total": 2,
+  "start": 0,
+  "sort": "id",
+  "order": "asc",
+  "size": 2
+}
