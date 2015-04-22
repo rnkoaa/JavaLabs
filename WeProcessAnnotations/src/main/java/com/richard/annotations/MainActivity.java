@@ -15,8 +15,9 @@ import java.util.Scanner;
  * Created by rnkoaa on 4/22/15.
  */
 public class MainActivity {
+    //private MealFactory factory = new MealFactory();
     public Meal order(String mealName) {
-
+        //return factory.create(mealName);
         if (mealName == null) {
             throw new IllegalArgumentException("Name of the meal is null!");
         }
@@ -35,6 +36,7 @@ public class MainActivity {
 
         throw new IllegalArgumentException("Unknown meal '" + mealName + "'");
     }
+
 
     public static void main(String[] args) {
         new MainActivity().run(args);
@@ -70,7 +72,7 @@ public class MainActivity {
         String input = null;
         try {
             BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-             input = bufferRead.readLine();
+            input = bufferRead.readLine();
 
             System.out.println("Name entered : " + input);
         } catch (IOException ex) {
