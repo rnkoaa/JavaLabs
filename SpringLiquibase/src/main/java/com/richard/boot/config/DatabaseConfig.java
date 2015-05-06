@@ -30,6 +30,7 @@ public class DatabaseConfig {
     public SpringLiquibase liquibase(DataSource dataSource) {
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setDataSource(dataSource);
+        //liquibase.setDefaultSchema("spring_liquibase");
         liquibase.setChangeLog("classpath:db/changelog/db.changelog-master.xml");
         return liquibase;
     }

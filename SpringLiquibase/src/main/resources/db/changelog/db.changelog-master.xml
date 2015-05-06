@@ -8,24 +8,16 @@
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <preConditions>
-        <runningAs username="postgres"/>
+        <runningAs username="app_user"/>
     </preConditions>
 
-    <changeSet id="1" author="u0165547">
-        <createTable tableName="city">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(50)"/>
-            <column name="state" type="char(2)"/>
-        </createTable>
-    </changeSet>
+    <include file="classpath:db/changelog/db.cities.changelog.xml"/>
 
-    <changeSet id="2" author="u0165547">
+    <!--<changeSet id="2" author="u0165547">
         <addColumn tableName="person">
             <column name="username" type="varchar(8)"/>
         </addColumn>
-    </changeSet>
+    </changeSet>-->
     <!-- <changeSet id="3" author="nvoxland">
          <addLookupTable
                  existingTableName="person" existingColumnName="state"
