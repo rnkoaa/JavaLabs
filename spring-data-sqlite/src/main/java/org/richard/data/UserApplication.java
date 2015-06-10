@@ -1,7 +1,10 @@
 package org.richard.data;
 
+import org.richard.data.domain.Course;
 import org.richard.data.domain.Role;
+import org.richard.data.domain.Student;
 import org.richard.data.domain.User;
+import org.richard.data.repository.StudentRepository;
 import org.richard.data.service.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -37,8 +40,15 @@ public class UserApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(UserApplication.class);
+        saveStudents(context);
 
+        //saveUsers(context);
+        context.close();
+    }
+
+    private static void saveUsers(ConfigurableApplicationContext context) {
         UserService userService = context.getBean(UserService.class);
+
 
         User user = new User("Patricia", "Sarpong");
         user.setUsername("patty");
@@ -61,6 +71,21 @@ public class UserApplication {
         /*Optional<Role> optionalRole = roleRepository.findRoleByName("ROLE_ADMIN");
         if (optionalRole.isPresent())
             System.out.println("Found Role: " + optionalRole.get());*/
-        context.close();
+    }
+
+    public static void saveStudents(ConfigurableApplicationContext context) {
+        StudentRepository studentRepository = context.getBean(StudentRepository.class);
+
+        Set<Course> courses = new HashSet<>();
+        courses.add(new Course("Maths"));
+        courses.add(new Course("Computer Science"));
+
+        Student student1 = new Student("Eswar", courses);
+        Student student2 = new Student("Joe", courses);
+
+        student1 = studentRepository.save(student1);
+        System.out.println("Saved Student1 with Id: " + student1.getStudentId());
+        student2 = studentRepository.save(student2);
+        System.out.println("Saved Student2 with Id: " + student2.getStudentId());
     }
 }
