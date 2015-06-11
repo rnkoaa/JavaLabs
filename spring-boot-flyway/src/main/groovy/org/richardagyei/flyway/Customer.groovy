@@ -1,33 +1,18 @@
 package org.richardagyei.flyway
 
-import javax.persistence.CascadeType
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.JoinTable
-import javax.persistence.ManyToMany
-import javax.persistence.OneToMany
-import javax.persistence.Table
-import javax.persistence.Version
+import javax.persistence.*
 
 /**
  * Created by rnkoaa on 6/10/15.
  */
 @Entity
 @Table(name = "customer")
-class Customer {
+class Customer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id", nullable = false, updatable = false)
     private Long id;
-
-    @Version
-    private Long version;
 
     @Column(name = "first_name", nullable = false)
     String firstname;

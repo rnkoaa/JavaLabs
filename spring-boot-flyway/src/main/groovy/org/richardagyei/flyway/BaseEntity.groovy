@@ -18,13 +18,11 @@ abstract class BaseEntity {
     long version
 
     @CreatedDate
-    @Column
-    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
-    DateTime created;
+    @Column(name = "created_time")
+    DateTime created = DateTime.now();
 
     @LastModifiedDate
-    @Column
-    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
-    DateTime updated;
+    @Column(name = "last_updated")
+    DateTime updated = DateTime.now()
 
 }
