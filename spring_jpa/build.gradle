@@ -26,6 +26,10 @@ dependencies {
 
     compile 'com.h2database:h2:1.4.187'
 
+    compile 'com.fasterxml.jackson.core:jackson-core:2.6.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.0'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.6.0'
+
     testCompile("org.springframework:spring-test:4.1.5.RELEASE"){
         exclude module: "junit:junit"
     }
