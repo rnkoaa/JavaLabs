@@ -19,8 +19,15 @@ public class Post {
     @Column(name = "body", nullable = false)
     private String body;
 
-    @OneToMany
-    private Author author;
+  /*  public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
+
+    private Author author;*/
 
     public Long getId() {
         return id;

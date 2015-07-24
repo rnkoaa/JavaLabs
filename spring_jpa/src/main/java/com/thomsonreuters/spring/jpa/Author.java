@@ -21,8 +21,16 @@ public class Author {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+/*
+    public List<Post> getPosts() {
+        return posts;
+    }
 
-    private List<Post> posts;
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
+    private List<Post> posts;*/
 
     public Long getId() {
         return id;
