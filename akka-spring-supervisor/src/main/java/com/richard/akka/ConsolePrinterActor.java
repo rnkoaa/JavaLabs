@@ -13,15 +13,13 @@ import akka.japi.pf.ReceiveBuilder;
 @Scope("prototype")
 public class ConsolePrinterActor extends AbstractLoggingActor  {
 	private static final Logger logger = LoggerFactory.getLogger(ConsolePrinterActor.class);
-	@Override
-	public void preStart() throws Exception {
-		//log().info("The Console Printer Actor has started. {}", self().path().name());
-	}
 	
 	//@Autowired
 	public ConsolePrinterActor() {
 		receive(ReceiveBuilder.match(String.class, indexMessage -> {
 			logger.info("Received String Message. {}", indexMessage);
+			
+			//tell your supervisor that you are done.
 			sender().tell("consoleDone", ActorRef.noSender());
 			
 			//now kill yourself
