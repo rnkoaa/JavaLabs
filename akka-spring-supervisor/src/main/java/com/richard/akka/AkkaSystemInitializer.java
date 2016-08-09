@@ -13,7 +13,13 @@ import akka.actor.ActorSystem;
 @Configuration
 public class AkkaSystemInitializer implements InitializingBean, FactoryBean<ActorSystem>, DisposableBean {
 	private final Logger logger = LoggerFactory.getLogger(AkkaSystemInitializer.class);
+	
+	/**
+	 * Actor system singleton for this application. the application context is
+	 * needed to initialize the Akka Spring Extension
+	 */
 	ActorSystem actorSystem;
+	
 	private final ApplicationContext applicationContext;
 
 	public AkkaSystemInitializer(ApplicationContext applicationContext) {
