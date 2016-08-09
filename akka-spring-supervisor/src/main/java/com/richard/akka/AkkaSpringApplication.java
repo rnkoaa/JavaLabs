@@ -29,16 +29,4 @@ public class AkkaSpringApplication implements CommandLineRunner {
 
 		printerSupervisor.tell("start", ActorRef.noSender());
 	}
-
-	/**
-	 * Actor system singleton for this application. the application context is
-	 * needed to initialize the Akka Spring Extension
-	 */
-	/*@Bean
-	public ActorSystem actorSystem(ApplicationContext applicationContext) {
-		ActorSystem system = ActorSystem.create("AkkaJavaSpring");
-		// initialize the application context in the Akka Spring Extension
-		SpringExtension.SpringExtProvider.get(system).initialize(applicationContext);
-		return system;
-	}*/
 }
