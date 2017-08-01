@@ -8,7 +8,9 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.kafka.KafkaComponent;
 import org.apache.camel.component.kafka.KafkaConstants;
+import org.apache.camel.component.properties.PropertiesComponent;
 import org.apache.camel.impl.DefaultCamelContext;
 
 /**
@@ -17,11 +19,38 @@ import org.apache.camel.impl.DefaultCamelContext;
 public class KuiperProducer {
     private static Scanner in;
 
+    public static class KafkaProducerRouteBuilder extends RouteBuilder {
+
+        @Override
+        public void configure() throws Exception {
+            /*from("direct:kafkaRoute")
+                    .to("kafka:{{kafka.host}}:{{kafka.port}}?" +
+                            "topic=javaKafkaBasicTopicName&" +
+                            "groupId=javaKafkaBasicGroupId&" +
+                            "autoOffsetReset=earliest&" +
+                            "consumersCount=1");*/
+
+            /*from("direct:kafkaRoute")
+                    .to("kafka:javaKafkaBasicTopicName");*/
+
+            from("direct:kafkaRoute")
+                    .to("kafka:{{producer.topic}}");
+        }
+    }
+
     public static class KafkaConsumerRouteBuilder extends RouteBuilder {
 
         @Override
         public void configure() throws Exception {
-            from("kafka:192.168.99.100:9092?topic=test&groupId=kuiper-consumers&autoOffsetReset=earliest&consumersCount=1")
+            PropertiesComponent pc = getContext().getComponent("properties", PropertiesComponent.class);
+            pc.setLocation("classpath:application.properties");
+            //from("kafka:localhost:9092?topic=test&groupId=testConsumerGroup&autoOffsetReset=earliest&consumersCount=1")
+            from("kafka:{{consumer.topic}}?brokers={{kafka.host}}:{{kafka.port}}"
+                    + "&maxPollRecords={{consumer.maxPollRecords}}"
+                    + "&consumersCount={{consumer.consumersCount}}"
+                    + "&seekTo={{consumer.seekTo}}"
+                    + "&groupId={{consumer.group}}")
+                    .routeId("consumerRoute")
                     .process(exchange -> {
                         String messageKey = "";
                         if (exchange.getIn() != null) {
@@ -44,24 +73,24 @@ public class KuiperProducer {
                         }
                     }).to("log:input");
         }
+
     }
 
     public static void main(String[] argv) throws Exception {
-        in = new Scanner(System.in);
-        System.out.println("Enter message(type exit to quit)");
-
         CamelContext context = new DefaultCamelContext();
-        context.addRoutes(new KafkaConsumerRouteBuilder());
+        PropertiesComponent pc = context.getComponent("properties", PropertiesComponent.class);
+        pc.setLocation("classpath:application.properties");
+
+        // setup kafka component with the brokers
+        KafkaComponent kafka = new KafkaComponent();
+        kafka.setBrokers("{{kafka.host}}:{{kafka.port}}");
+        context.addComponent("kafka", kafka);
+
+        context.addRoutes(new KafkaProducerRouteBuilder());
+        ProducerTemplate producerTemplate = context.createProducerTemplate();
         context.start();
 
-        ProducerTemplate producerTemplate = context.createProducerTemplate();
-        String line = in.nextLine();
-        while (!line.equals("exit")) {
-            producerTemplate.sendBody("kafka:192.168.99.100:9092?topic=test", line);
-            line = in.nextLine();
-        }
-        in.close();
-
+        producerTemplate.sendBody("direct:kafkaRoute", "This is a message from the /message route!");
 
     }
 

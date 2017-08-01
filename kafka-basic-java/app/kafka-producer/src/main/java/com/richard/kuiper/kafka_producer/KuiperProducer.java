@@ -14,7 +14,9 @@ import java.util.Scanner;
  */
 public class KuiperProducer {
 	 private static Scanner in;
-     
+
+    //Topic Name: testKafkaJavaBasic
+    //GroupId: javaKafkaTopic
 	public static void main(String[] argv) {
 		if (argv.length != 1) {
             System.err.println("Please specify 1 parameters ");

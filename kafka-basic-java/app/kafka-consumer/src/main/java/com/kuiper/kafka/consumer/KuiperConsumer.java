@@ -13,6 +13,9 @@ import java.util.Scanner;
 public class KuiperConsumer {
     private static Scanner in;
 
+    // javaKafkaBasicTopicName javaKafkaBasicGroupId
+    //Topic Name: javaKafkaBasicTopicName
+    //GroupId: javaKafkaBasicGroupId
     public static void main(String[] argv) throws InterruptedException {
         // TODO Auto-generated method stub
         if (argv.length != 2) {
