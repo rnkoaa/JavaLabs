@@ -71,7 +71,8 @@ public class KuiperProducer {
                                     + messageKey + " message :: "
                                     + data + "\n");
                         }
-                    }).to("log:input");
+                    }).to("stream:out");
+            //.to("log:input");
         }
 
     }
@@ -84,6 +85,7 @@ public class KuiperProducer {
         // setup kafka component with the brokers
         KafkaComponent kafka = new KafkaComponent();
         kafka.setBrokers("{{kafka.host}}:{{kafka.port}}");
+        //context.addRoutes(new KafkaConsumerRouteBuilder());
         context.addComponent("kafka", kafka);
 
         context.addRoutes(new KafkaProducerRouteBuilder());

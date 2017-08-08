@@ -14,6 +14,7 @@ public class KuiperConsumer {
     private static Scanner in;
 
     // javaKafkaBasicTopicName javaKafkaBasicGroupId
+    // application.registration.events
     //Topic Name: javaKafkaBasicTopicName
     //GroupId: javaKafkaBasicGroupId
     public static void main(String[] argv) throws InterruptedException {
