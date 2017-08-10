@@ -1,0 +1,4 @@
+rootProject.name='proto'
+
+include 'kafka-consumer'
+include 'kafka-producer'

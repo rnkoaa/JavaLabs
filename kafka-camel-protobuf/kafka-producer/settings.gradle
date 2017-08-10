@@ -1,0 +1,3 @@
+
+include ':kafka-proto'
+project(':kafka-proto').projectDir = new File('../kafka-proto')

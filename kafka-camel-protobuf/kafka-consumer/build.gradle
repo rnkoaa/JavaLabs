@@ -1,0 +1,42 @@
+buildscript {
+    ext {
+        camelVersion = '2.19.2'
+        springBootVersion = '1.5.6.RELEASE'
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+jar{
+    archiveName = "kafka-consumer.jar"
+}
+
+dependencies {
+    compile project(":kafka-proto")
+    compile("org.apache.camel:camel-spring-boot-starter:${camelVersion}")
+    compile("org.apache.camel:camel-kafka:${camelVersion}")
+    compile("org.apache.camel:camel-stream:${camelVersion}")
+    compile('org.springframework.boot:spring-boot-starter-web')
+
+    compile("com.google.protobuf:protobuf-java:3.3.1")
+
+    runtime('org.springframework.boot:spring-boot-devtools')
+    compileOnly('org.projectlombok:lombok')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
