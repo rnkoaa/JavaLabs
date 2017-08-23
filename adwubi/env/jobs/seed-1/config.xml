@@ -1,0 +1,54 @@
+<project>
+    <description/>
+    <keepDependencies>false</keepDependencies>
+    <properties/>
+    <scm class="hudson.scm.NullSCM"/>
+    <canRoam>true</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers/>
+    <concurrentBuild>false</concurrentBuild>
+    <builders>
+        <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.47">
+            <scriptText>
+                job(&apos;&apos;){
+                    description(&apos;&apos;)
+                    configure { project ->
+                        project.remove(project / scm)
+                        project / scm(class: &apos;hudson.plugins.tfs.TeamFoundationServerScm&apos;, plugin: &quot;tfs@4.0.0&quot;) {
+                            serverUrl(&apos;&apos;)
+                            projectPath(&apos;&apos;)
+                            localPath(&apos;.&apos;)
+                            workspaceName(&apos;Jenkins_${JOB_NAME}_${COMPUTERNAME}&apos;)
+                            password(&apos;&apos;)
+                            userName(&apos;&apos;)
+                            useUpdate(&apos;true&apos;)
+                        }
+                    }
+                    steps {
+                        gradle {
+                            tasks(&apos;clean build&apos;)
+                            switches(&apos;-x test&apos;)
+                            useWrapper()
+                            makeExecutable()
+                            //rootBuildScriptDir()
+                            //buildFile()
+                            //gradleName(&apos;(Default)&apos;)
+                            fromRootBuildScriptDir()
+                            useWorkspaceAsHome(false)
+                        }
+                    }
+                }
+            </scriptText>
+            <usingScriptText>true</usingScriptText>
+            <ignoreExisting>false</ignoreExisting>
+            <removedJobAction>IGNORE</removedJobAction>
+            <removedViewAction>IGNORE</removedViewAction>
+            <lookupStrategy>JENKINS_ROOT</lookupStrategy>
+            <additionalClasspath/>
+        </javaposse.jobdsl.plugin.ExecuteDslScripts>
+    </builders>
+    <publishers/>
+    <buildWrappers/>
+</project>
