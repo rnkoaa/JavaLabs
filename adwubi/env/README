@@ -1,0 +1,4 @@
+docker rm -f jenkins; docker run -it -p 8080:8080 -p 50001:50001 -d --name jenkins rnkoaa/jenkins:2.7
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+
+http://localhost:8080/pluginManager/api/xml?depth=1

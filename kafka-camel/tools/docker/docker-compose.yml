@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  kafka_consumer:
+    image: rnkoaa/kafka-consumer
+    container_name: 'kafka-consumer'
+    networks:
+      - kafka_docker_local
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+  kafka_producer:
+    image: rnkoaa/kafka-producer
+    container_name: 'kafka-producer'
+    networks:
+      - kafka_docker_local
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+networks:
+  kafka_docker_local:
+    external: true

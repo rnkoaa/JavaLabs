@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+    <actions/>
+    <description></description>
+    <keepDependencies>false</keepDependencies>
+    <properties/>
+    <scm class="hudson.scm.NullSCM"/>
+    <canRoam>true</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers/>
+    <concurrentBuild>false</concurrentBuild>
+    <builders>
+        <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.47">
+            <scriptText>job(&apos;Judicial_Migration_Service_Build&apos;){
+                description(&apos;A basic build of the Artifact Migration Service Tool&apos;)
+                configure { project -&gt;
+                project.remove(project / scm)
+                project / scm(class: &apos;hudson.plugins.tfs.TeamFoundationServerScm&apos;, plugin: &quot;tfs@4.0.0&quot;) {
+                serverUrl(&apos;&apos;)
+                projectPath(&apos;&apos;)
+                localPath(&apos;.&apos;)
+                workspaceName(&apos;Jenkins_${JOB_NAME}_${COMPUTERNAME}&apos;)
+                password(&apos;replace&apos;)
+                userName(&apos;replace&apos;)
+                useUpdate(&apos;true&apos;)
+                }
+                }
+                steps {
+                gradle {
+                tasks(&apos;clean build&apos;)
+                switches(&apos;-x test&apos;)
+                useWrapper()
+                makeExecutable()
+                //rootBuildScriptDir()
+                //buildFile()
+                //gradleName(&apos;(Default)&apos;)
+                fromRootBuildScriptDir()
+                useWorkspaceAsHome(false)
+                }
+                }
+                }</scriptText>
+            <usingScriptText>true</usingScriptText>
+            <ignoreExisting>false</ignoreExisting>
+            <removedJobAction>IGNORE</removedJobAction>
+            <removedViewAction>IGNORE</removedViewAction>
+            <lookupStrategy>JENKINS_ROOT</lookupStrategy>
+            <additionalClasspath></additionalClasspath>
+        </javaposse.jobdsl.plugin.ExecuteDslScripts>
+        <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.47">
+            <scriptText>job(&apos;&apos;){
+                description(&apos;&apos;)
+                configure { project -&gt;
+                project.remove(project / scm)
+                project / scm(class: &apos;hudson.plugins.tfs.TeamFoundationServerScm&apos;, plugin: &quot;tfs@4.0.0&quot;) {
+                serverUrl(&apos;tfsurl&apos;)
+                projectPath(&apos;projecturl&apos;)
+                localPath(&apos;.&apos;)
+                workspaceName(&apos;Jenkins_${JOB_NAME}_${COMPUTERNAME}&apos;)
+                password(&apos;replace&apos;)
+                userName(&apos;replace&apos;)
+                useUpdate(&apos;true&apos;)
+                }
+                }
+                steps {
+                gradle {
+                tasks(&apos;clean build&apos;)
+                description &apos;&apos;
+                switches(&apos;-x test&apos;)
+                useWrapper()
+                //useWrapper &apos;true&apos;
+                //wrapperScript &apos;gradlew&apos;
+                makeExecutable()
+                //rootBuildScriptDir()
+                //buildFile()
+                //buildFile &apos;&apos;
+                //gradleName(&apos;(Default)&apos;)
+                fromRootBuildScriptDir()
+                useWorkspaceAsHome(false)
+                }
+                }
+                publishers {
+                configure { project -&gt;
+                project / publishers / &apos;hudson.plugins.deploy.DeployPublisher&apos;{
+                adapters {
+                &apos;hudson.plugins.deploy.tomcat.Tomcat7xAdapter&apos;{
+                userName(&apos;jenkins-deployer&apos;)
+                //passwordScrambled(&apos;bm90d2VzdDEyMw==&apos;)
+                password(&apos;&apos;)
+                url(&apos;&apos;)
+                }
+                }
+                contextPath(&apos;&apos;)
+                war(&apos;**/*.war&apos;)
+                onFailure(&apos;false&apos;)
+                }
+
+                }
+                }
+                }</scriptText>
+            <usingScriptText>true</usingScriptText>
+            <ignoreExisting>false</ignoreExisting>
+            <removedJobAction>IGNORE</removedJobAction>
+            <removedViewAction>IGNORE</removedViewAction>
+            <lookupStrategy>JENKINS_ROOT</lookupStrategy>
+            <additionalClasspath></additionalClasspath>
+        </javaposse.jobdsl.plugin.ExecuteDslScripts>
+    </builders>
+    <publishers/>
+    <buildWrappers/>
+</project>

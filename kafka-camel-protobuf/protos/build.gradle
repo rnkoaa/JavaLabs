@@ -1,0 +1,80 @@
+buildscript {
+    ext {
+        camelVersion = '2.19.2'
+        springBootVersion = '1.5.6.RELEASE'
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.1'
+    }
+}
+
+plugins {
+    id "com.google.protobuf" version "0.8.1"
+    id "java"
+    id "idea"
+}
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    archiveName = "kafka-consumer.jar"
+}
+
+dependencies {
+    compile("com.google.protobuf:protobuf-java:3.3.1")
+}
+
+
+sourceSets {
+    main {
+        proto {
+            // In addition to the default 'src/main/proto'
+            srcDir 'src/main/protos'
+            // In addition to the default '**/*.proto' (use with caution).
+            // Using an extension other than 'proto' is NOT recommended,
+            // because when proto files are published along with class files, we can
+            // only tell the type of a file from its extension.
+            //include '**/*.protodevel'
+        }
+        /*java {
+            ...
+        }*/
+    }
+    /* test {
+         proto {
+             // In addition to the default 'src/test/proto'
+             srcDir 'src/test/protocolbuffers'
+         }
+     }*/
+}
+
+
+protobuf {
+
+    generatedFilesBaseDir = "$projectDir/build/generated"
+
+    // Configure the protoc executable
+    protoc {
+        // Download from repositories
+        artifact = 'com.google.protobuf:protoc:3.3.0'
+    }
+}
+
+clean {
+    delete protobuf.generatedFilesBaseDir
+}
+
+idea {
+    module {
+        sourceDirs += file("${protobuf.generatedFilesBaseDir}/main/java");
+    }
+}

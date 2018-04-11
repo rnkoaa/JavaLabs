@@ -1,0 +1,54 @@
+/* Only keep the 10 most recent builds. */
+def projectProperties = [
+    [$class: 'BuildDiscarderProperty',strategy: [$class: 'LogRotator', numToKeepStr: '5']],
+]
+
+if (!env.CHANGE_ID) {
+    if (env.BRANCH_NAME == null) {
+        projectProperties.add(pipelineTriggers([cron('H/30 * * * *')]))
+    }
+}
+
+properties(projectProperties)
+try{
+   node {
+   //def mvnHome
+   stage('\u2776 Preparation') { // for display purposes
+      // Get some code from a GitHub repository
+      git 'https://github.com/rnkoaa/adwubi'
+   }
+   stage('\u2777 Build') {
+      echo "\u2600 BUILD_URL=${env.BUILD_URL}"
+ 
+      def workspace = pwd()
+      echo "\u2600 workspace=${workspace}"
+      // Run the gradle build
+      if (isUnix()) {
+         sh "chmod +x gradlew"
+         sh "./gradlew clean build -x test"
+      } else {
+         bat(/gradlew.bat clean build -x test/)
+      }
+   }
+   stage('Results') {
+      //junit '**/target/surefire-reports/TEST-*.xml'
+      //archive 'target/*.jar'
+      if (isUnix()) {
+         sh "echo 'hello, World'"
+      } else {
+         bat("echo 'hello, World'")
+      }
+
+      echo "\u2600 ${env.JOB_NAME} - ${env.BUILD_NUMBER}"
+   }
+
+   stage('Run application'){
+      dir('build/libs') {
+      // some block
+         sh "java -jar adwubi.jar"
+      }
+   }
+}
+}catch (exc) {
+
+}
