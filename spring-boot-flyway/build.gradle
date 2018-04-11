@@ -1,0 +1,40 @@
+buildscript {
+    ext {
+        springBootVersion = '1.2.3.RELEASE'
+        hibernateVersion = '4.2.0.Final'
+        postgresqlVersion = '9.4-1200-jdbc4'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+group 'org.richardagyei'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+
+apply plugin: 'spring-boot'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.3'
+    compile "org.springframework.boot:spring-boot-starter-data-jpa"
+    compile "org.flywaydb:flyway-core"
+    compile 'joda-time:joda-time:2.8'
+    //provided "org.hsqldb:hsqldb:runtime"
+    compile("com.h2database:h2")
+    compile ('org.jadira.usertype:usertype.core:3.2.0.GA')
+
+    testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

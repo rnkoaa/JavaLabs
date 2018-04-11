@@ -1,12 +1,15 @@
 *.iml
 *.idea
+**/out/
+
+
 
 bin/
 target/
 dist/
 
 *.classpath
-*/*.settings
+**/*.settings
 .project
 
 *.class
@@ -14,4 +17,4 @@ dist/
 !gradle.jar
 .gradle
 **/build/
-out/
+

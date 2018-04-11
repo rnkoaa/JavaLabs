@@ -1,0 +1,12 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':FactoryAnnotationProcessor')
+    compile 'com.google.auto.service:auto-service:1.0-rc2'
+    compile 'com.squareup:javawriter:2.5.0'
+    compile 'org.apache.commons:commons-lang3:3.0'
+}
