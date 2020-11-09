@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Condition;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,13 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProcessDefinitionTests {
     private ObjectMapper objectMapper;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         objectMapper = new ObjectMapper();
     }
 
     @Test
-    public void deserializeSingleResponseObject() throws IOException {
+    void deserializeSingleResponseObject() throws IOException {
         String data = readFile("process_definition.json");
         assertThat(data).isNotNull().isNotEmpty();
 
@@ -52,7 +52,7 @@ public class ProcessDefinitionTests {
     }
 
     @Test
-    public void deserializeProperCollectionResponseWithOneDataObject() throws IOException {
+    void deserializeProperCollectionResponseWithOneDataObject() throws IOException {
         String data = readFile("process_definitions.json");
         assertThat(data).isNotNull().isNotEmpty();
 

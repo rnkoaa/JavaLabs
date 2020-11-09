@@ -7,9 +7,9 @@ import com.richard.json.PersonDeserializer;
 import com.richard.json.PersonSerializer;
 import com.richard.json.UserDeserializer;
 import com.richard.json.UserSerializer;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -28,8 +28,8 @@ public class JacksonTests {
     private User user;
     private List<Person> persons;
 
-    @BeforeClass
-    public static void doStaging() {
+    @BeforeAll
+    static void doStaging() {
         objectMapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addSerializer(Person.class, new PersonSerializer());
@@ -39,8 +39,8 @@ public class JacksonTests {
         objectMapper.registerModule(module);
     }
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         personOne = new Person("Jackson", "Monroe", 31);
         persons = Arrays.asList(
                 new Person("John", "Kennedy", 31),
@@ -53,7 +53,7 @@ public class JacksonTests {
     }
 
     @Test
-    public void testSingleSerializationAndDeserialization() throws IOException {
+    void testSingleSerializationAndDeserialization() throws IOException {
         String singlePersonString = objectMapper.writeValueAsString(personOne);
         assertThat(singlePersonString).isNotNull()
                 .isEqualTo("{\"firstName\":\"Jackson\",\"lastName\":\"Monroe\",\"age\":31}");
@@ -66,7 +66,7 @@ public class JacksonTests {
 
 
     @Test
-    public void testEmbeddedObjects() throws IOException {
+    void testEmbeddedObjects() throws IOException {
         String userJson = objectMapper.writeValueAsString(user);
         System.out.println(userJson);
         assertThat(userJson)
@@ -82,7 +82,7 @@ public class JacksonTests {
     }
 
     @Test
-    public void testCollectionSerializationDeserializations() throws IOException {
+    void testCollectionSerializationDeserializations() throws IOException {
         String personArrayJson = objectMapper.writeValueAsString(persons);
         System.out.println(personArrayJson);
         assertThat(personArrayJson)
