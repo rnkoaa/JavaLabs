@@ -1,7 +1,7 @@
 package com.richard;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,8 +18,8 @@ public class StreamsTesting {
     private List<String> names;
     List<Person> persons;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         names = Arrays.asList("Jacque", "Jones");
         persons = Arrays.asList(
                 new Person("kwame", "od", 31),
@@ -31,7 +31,7 @@ public class StreamsTesting {
     }
 
     @Test
-    public void testFilters() {
+    void testFilters() {
         long count = names.stream()
                 .filter(name -> name.startsWith("Ja"))
                 .count();
