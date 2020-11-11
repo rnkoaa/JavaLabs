@@ -1,0 +1,9 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.configuration.runtimes": [{
+      "name": "JavaSE-15",
+      "path": "/opt/sdkman/java/15.0.1.hs-adpt",
+      "default": true
+    }
+  ]
+}
