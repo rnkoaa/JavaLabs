@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  mongo-express:
+    image: mongo-express:0.54
+    container_name: mongo-express
+    environment:
+    - ME_CONFIG_MONGODB_SERVER=mongo
+    depends_on:
+      - mongo
+    ports:
+      - '8081:8081'
+  mongo:
+    image: mongo:4.0.21
+    container_name: mongo
+    ports:
+      - '27017:27017'

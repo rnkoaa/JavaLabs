@@ -1,0 +1,62 @@
+plugins {
+  id 'java'
+  id 'application'
+  id 'idea'
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_15
+  targetCompatibility = JavaVersion.VERSION_15
+}
+
+mainClassName = "com.simple.mongo.MainApplication"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    compileOnly('org.projectlombok:lombok:1.18.16')
+    annotationProcessor('org.projectlombok:lombok:1.18.16')
+
+    // 2.11.3
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+
+     implementation 'org.mongodb:mongodb-driver-sync:4.1.1'
+//    implementation 'org.mongodb:mongodb-driver-reactivestreams:4.1.1'
+
+    testImplementation(platform("org.junit:junit-bom:${junitVersion}"))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testImplementation("org.assertj:assertj-core:${assertjVersion}")
+    testImplementation("org.mockito:mockito-core:${mockitoVersion}")
+    testImplementation("org.mockito:mockito-junit-jupiter:${mockitoVersion}")
+    testImplementation("org.testcontainers:junit-jupiter:1.15.0")
+
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += "--enable-preview"
+}
+tasks.withType(Test) {
+    jvmArgs += "--enable-preview"
+}
+tasks.withType(JavaExec) {
+    jvmArgs += "--enable-preview"
+}
