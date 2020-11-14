@@ -11,6 +11,7 @@ public class Person {
     private String name;
     private int age;
     private Address address;
+    private ItemId itemId;
 
     public Person() {
     }
@@ -51,6 +52,25 @@ public class Person {
 
     public void setAddress(final Address address) {
         this.address = address;
+    }
+
+    public ItemId getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(ItemId itemId) {
+        this.itemId = itemId;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", address=" + address +
+                ", itemId=" + itemId +
+                '}';
     }
 
     // Rest of implementation

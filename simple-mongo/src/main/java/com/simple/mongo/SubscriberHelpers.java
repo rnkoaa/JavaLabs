@@ -3,6 +3,8 @@ package com.simple.mongo;
 import com.mongodb.MongoInterruptedException;
 import com.mongodb.MongoTimeoutException;
 import org.bson.Document;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;

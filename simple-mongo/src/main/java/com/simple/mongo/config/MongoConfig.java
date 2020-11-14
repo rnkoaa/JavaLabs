@@ -2,10 +2,10 @@ package com.simple.mongo.config;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoClients;
+import com.mongodb.reactivestreams.client.MongoCollection;
+import com.mongodb.reactivestreams.client.MongoDatabase;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -21,6 +21,7 @@ public class MongoConfig {
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .codecRegistry(codecRegistries())
+//                .co
                 .uuidRepresentation(UuidRepresentation.STANDARD)
                 .build();
         return MongoClients.create(settings);
@@ -31,7 +32,8 @@ public class MongoConfig {
                 MongoClientSettings.getDefaultCodecRegistry(),
                 fromProviders(PojoCodecProvider.builder().automatic(true).build()),
                 // save uuids as UUID, instead of LUUID
-                CodecRegistries.fromProviders(new UuidCodecProvider(UuidRepresentation.STANDARD)),
+                CodecRegistries.fromProviders(new UuidCodecProvider(UuidRepresentation.STANDARD),
+                        new ItemIdCodecProvider()),
                 MongoClientSettings.getDefaultCodecRegistry()
         );
     }
