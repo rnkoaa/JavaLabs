@@ -6,7 +6,7 @@ repositories {
 
 dependencies {
     compile project(':FactoryAnnotation')
-    compile 'com.google.auto.service:auto-service:1.0-rc2'
+    compile 'com.google.auto.service:auto-service:1.0-rc7'
     compile 'com.squareup:javawriter:2.5.0'
     compile 'org.apache.commons:commons-lang3:3.0'
 }

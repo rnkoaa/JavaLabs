@@ -15,24 +15,24 @@ import java.util.Scanner;
  * Created by rnkoaa on 4/22/15.
  */
 public class MainActivity {
-    //private MealFactory factory = new MealFactory();
+//    private MealFactory factory = new MealFactory();
     public Meal order(String mealName) {
         //return factory.create(mealName);
-        if (mealName == null) {
-            throw new IllegalArgumentException("Name of the meal is null!");
-        }
-
-        if ("Margherita".equals(mealName)) {
-            return new MargheritaPizza();
-        }
-
-        if ("Calzone".equals(mealName)) {
-            return new CalzonePizza();
-        }
-
-        if ("Tiramisu".equals(mealName)) {
-            return new Tiramisu();
-        }
+//        if (mealName == null) {
+//            throw new IllegalArgumentException("Name of the meal is null!");
+//        }
+//
+//        if ("Margherita".equals(mealName)) {
+//            return new MargheritaPizza();
+//        }
+//
+//        if ("Calzone".equals(mealName)) {
+//            return new CalzonePizza();
+//        }
+//
+//        if ("Tiramisu".equals(mealName)) {
+//            return new Tiramisu();
+//        }
 
         throw new IllegalArgumentException("Unknown meal '" + mealName + "'");
     }

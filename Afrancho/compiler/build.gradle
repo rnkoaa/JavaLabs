@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(":annotations")
+
+    annotationProcessor ('com.google.auto.service:auto-service:1.0-rc7')
+    compile ('com.google.auto.service:auto-service:1.0-rc7')
+}
