@@ -1,0 +1,5 @@
+rootProject.name = 'afrancho-annotation-processing-gradle'
+include 'annotations'
+include 'compiler'
+include 'application'
+
