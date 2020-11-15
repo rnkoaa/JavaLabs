@@ -7,9 +7,13 @@ import javax.annotation.processing.Generated;
 import javax.inject.Provider;
 
 @Generated(
-  value = "dagger.internal.codegen.ComponentProcessor",
-  comments = "https://google.github.io/dagger"
+    value = "dagger.internal.codegen.ComponentProcessor",
+    comments = "https://dagger.dev"
 )
+@SuppressWarnings({
+    "unchecked",
+    "rawtypes"
+})
 public final class DaggerApplicationContext implements ApplicationContext {
   private Provider<Integer> horsePowerProvider;
 
@@ -36,11 +40,9 @@ public final class DaggerApplicationContext implements ApplicationContext {
   private void initialize(final Integer horsePowerParam, final Integer engineCapacityParam) {
     this.horsePowerProvider = InstanceFactory.create(horsePowerParam);
     this.engineCapacityProvider = InstanceFactory.create(engineCapacityParam);
-    this.dieselEngineProvider =
-        DieselEngine_Factory.create(horsePowerProvider, engineCapacityProvider);
+    this.dieselEngineProvider = DieselEngine_Factory.create(horsePowerProvider, engineCapacityProvider);
     this.bindEngineProvider = DoubleCheck.provider((Provider) dieselEngineProvider);
-    this.carProvider =
-        DoubleCheck.provider(Car_Factory.create(Wheel_Factory.create(), bindEngineProvider));
+    this.carProvider = DoubleCheck.provider(Car_Factory.create(Wheel_Factory.create(), bindEngineProvider));
     this.carConfigProvider = DoubleCheck.provider(CarModule_CarConfigFactory.create());
   }
 
@@ -55,7 +57,8 @@ public final class DaggerApplicationContext implements ApplicationContext {
   }
 
   @Override
-  public void inject(MainApplication mainApplication) {}
+  public void inject(MainApplication mainApplication) {
+  }
 
   private static final class Builder implements ApplicationContext.Builder {
     private Integer horsePower;
