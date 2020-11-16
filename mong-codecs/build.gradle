@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+
+dependencies {
+    compile project(":mongo-codec-annotations")
+    annotationProcessor project(":mongo-codec-annotation-compiler")
+
+    implementation('javax.persistence:javax.persistence-api:2.2')
+    implementation('org.mongodb:mongodb-driver-sync:4.1.1')
+
+    testImplementation(platform("org.junit:junit-bom:${junitVersion}"))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testImplementation("org.assertj:assertj-core:${assertjVersion}")
+    testCompile("org.mockito:mockito-core:${mockitoVersion}")
+    testCompile("org.mockito:mockito-junit-jupiter:${mockitoVersion}")
+}
+
+allprojects {
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += "--enable-preview"
+    }
+    tasks.withType(Test) {
+        jvmArgs += "--enable-preview"
+    }
+    tasks.withType(JavaExec) {
+        jvmArgs += "--enable-preview"
+    }
+}

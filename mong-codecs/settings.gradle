@@ -1,0 +1,4 @@
+rootProject.name = 'mong-codecs'
+include 'mongo-codec-annotations'
+include 'mongo-codec-annotation-compiler'
+
