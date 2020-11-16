@@ -7,27 +7,19 @@ import com.squareup.javapoet.ClassName;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-
-//@SupportedAnnotationTypes(
-//        "com.marketplace.framework.mongo.annotations.MongoStringCodec"
-//)
 @AutoService(Processor.class)
 public class MongoStringCodecProcessor extends AbstractProcessor {
     private Filer filer;
 
-    private Types typeUtils;
-    private Elements elementUtils;
+//    private Types typeUtils;
+//    private Elements elementUtils;
     private Messager messager;
 
     @Override
@@ -36,8 +28,8 @@ public class MongoStringCodecProcessor extends AbstractProcessor {
         filer = processingEnv.getFiler();
         messager = processingEnv.getMessager();
 
-        typeUtils = processingEnv.getTypeUtils();
-        elementUtils = processingEnv.getElementUtils();
+//        typeUtils = processingEnv.getTypeUtils();
+//        elementUtils = processingEnv.getElementUtils();
     }
 
     @Override
@@ -92,10 +84,6 @@ public class MongoStringCodecProcessor extends AbstractProcessor {
                 return;
             }
         }
-//        processingEnv.getMessager().printMessage(
-//                Diagnostic.Kind.ERROR,
-//                "missing no argument constructor",
-//                typeElement);
     }
 
     private ClassName getName(TypeMirror typeMirror) {
