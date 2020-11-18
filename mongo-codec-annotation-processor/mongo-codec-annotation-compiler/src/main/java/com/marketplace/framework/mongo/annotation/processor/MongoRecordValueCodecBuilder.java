@@ -1,6 +1,8 @@
 package com.marketplace.framework.mongo.annotation.processor;
 
 import com.squareup.javapoet.*;
+import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
 import org.bson.Document;
@@ -23,194 +25,183 @@ import java.util.stream.Collectors;
 // https://www.howtobuildsoftware.com/index.php/how-do/oqS/java-mongodb-encoding-bson-mongodb-bson-codec-not-being-used-while-encoding-object
 // https://www.edureka.co/blog/mongodb-client/
 public class MongoRecordValueCodecBuilder {
-    private final Filer filer;
-    private final TypeMirror elementTypeMirror;
-    private final ClassName className;
-    private final TypeName elementTypeName;
-    private final List<? extends Element> recordComponents;
-    private final Messager messager;
 
-    public MongoRecordValueCodecBuilder(Filer filer, Element element, Messager messager) {
-        this.filer = filer;
-        this.elementTypeMirror = element.asType();
-        this.className = getClassName(this.elementTypeMirror);
-        this.elementTypeName = TypeName.get(elementTypeMirror);
-        this.messager = messager;
-        this.recordComponents = element.getEnclosedElements()
-                .stream()
-                .filter(component -> component.getKind()
-                        .equals(ElementKind.RECORD_COMPONENT))
-                .collect(Collectors.toList());
+  private final Filer filer;
+  private final TypeMirror elementTypeMirror;
+  private final ClassName className;
+  private final TypeName elementTypeName;
+  private final List<? extends Element> recordComponents;
+  private final Messager messager;
+
+  public MongoRecordValueCodecBuilder(Filer filer, Element element, Messager messager) {
+    this.filer = filer;
+    this.elementTypeMirror = element.asType();
+    this.className = getClassName(this.elementTypeMirror);
+    this.elementTypeName = TypeName.get(elementTypeMirror);
+    this.messager = messager;
+    this.recordComponents = element.getEnclosedElements()
+        .stream()
+        .filter(component -> component.getKind()
+            .equals(ElementKind.RECORD_COMPONENT))
+        .collect(Collectors.toList());
+  }
+
+
+  private ClassName getClassName(TypeMirror typeMirror) {
+    String rawString = typeMirror.toString();
+    int dotPosition = rawString.lastIndexOf(".");
+    String packageName = rawString.substring(0, dotPosition);
+    String className = rawString.substring(dotPosition + 1);
+    return ClassName.get(packageName, className);
+  }
+
+  public void generateCodec() throws IOException {
+    ClassName codec = ClassName.get("org.bson.codecs", "Codec");
+    ParameterizedTypeName parameterizedTypeName =
+        ParameterizedTypeName.get(codec, elementTypeName);
+
+    TypeSpec codecTypeSpec = TypeSpec.classBuilder(this.className.simpleName() + "Codec")
+        .addSuperinterface(parameterizedTypeName)
+        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+        .addField(FieldSpec
+            .builder(DocumentCodec.class, "documentCodec", Modifier.PRIVATE, Modifier.FINAL)
+            .build())
+        .addMethod(generateConstructor())
+        .addMethod(generateDecodeMethod())
+        .addMethod(generateEncodeMethod())
+        .addMethod(generateGetEncoderClass())
+        .build();
+
+    JavaFile javaFile = JavaFile.builder(this.className.packageName(), codecTypeSpec)
+        .build();
+
+    javaFile.writeTo(filer);
+  }
+
+  private MethodSpec generateConstructor() {
+    MethodSpec.Builder builder = MethodSpec.constructorBuilder()
+        .addModifiers(Modifier.PUBLIC)
+        .addParameter(DocumentCodec.class, "documentCodec");
+    builder.addStatement("this.documentCodec = documentCodec");
+    return builder.build();
+  }
+
+  private MethodSpec generateGetEncoderClass() {
+    ClassName clzz = ClassName.get(Class.class);
+    ParameterizedTypeName parameterizedTypeName =
+        ParameterizedTypeName.get(clzz, elementTypeName);
+
+    MethodSpec.Builder builder = MethodSpec.methodBuilder("getEncoderClass")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .returns(parameterizedTypeName)
+        .addStatement("return $T.class", elementTypeName);
+
+    return builder.build();
+  }
+
+  private MethodSpec generateEncodeMethod() {
+    MethodSpec.Builder builder = MethodSpec.methodBuilder("encode")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .returns(void.class)
+        .addParameter(BsonWriter.class, "writer")
+        .addParameter(elementTypeName, "value")
+        .addParameter(EncoderContext.class, "encoderContext");
+
+    var documentTypeName = TypeName.get(Document.class);
+    CodeBlock.Builder documentCodecBuilder = CodeBlock
+        .builder()
+        .addStatement("var doc = new $T()", documentTypeName);
+
+    for (Element recordComponent : recordComponents) {
+      Name simpleName = recordComponent.getSimpleName();
+      documentCodecBuilder.addStatement("doc.put($S, value.$L())", simpleName, simpleName);
     }
 
+    documentCodecBuilder.addStatement("documentCodec.encode(writer, doc, encoderContext)")
+        .build();
 
-    private ClassName getClassName(TypeMirror typeMirror) {
-        String rawString = typeMirror.toString();
-        int dotPosition = rawString.lastIndexOf(".");
-        String packageName = rawString.substring(0, dotPosition);
-        String className = rawString.substring(dotPosition + 1);
-        return ClassName.get(packageName, className);
-    }
+    builder.addCode(documentCodecBuilder.build());
 
-    public void generateCodec() throws IOException {
-        ClassName codec = ClassName.get("org.bson.codecs", "Codec");
-        ParameterizedTypeName parameterizedTypeName =
-                ParameterizedTypeName.get(codec, elementTypeName);
+    return builder.build();
+  }
 
-        TypeSpec codecTypeSpec = TypeSpec.classBuilder(this.className.simpleName() + "Codec")
-                .addSuperinterface(parameterizedTypeName)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addField(FieldSpec
-                        .builder(DocumentCodec.class, "documentCodec", Modifier.PRIVATE, Modifier.FINAL)
-                        .build())
-                .addMethod(generateConstructor())
-                .addMethod(generateDecodeMethod())
-                .addMethod(generateEncodeMethod())
-                .addMethod(generateGetEncoderClass())
-                .build();
+  private MethodSpec generateDecodeMethod() {
+    MethodSpec.Builder builder = MethodSpec.methodBuilder("decode")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .returns(elementTypeName)
+        .addParameter(BsonReader.class, "reader")
+        .addParameter(DecoderContext.class, "decoderContext");
 
-        JavaFile javaFile = JavaFile.builder(this.className.packageName(), codecTypeSpec)
-                .build();
+    CodeBlock.Builder documentCodecBuilder = CodeBlock
+        .builder()
+        .addStatement("var doc = documentCodec.decode(reader, decoderContext)");
 
-        javaFile.writeTo(filer);
-    }
-
-    private MethodSpec generateConstructor() {
-        MethodSpec.Builder builder = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(DocumentCodec.class, "documentCodec");
-        builder.addStatement("this.documentCodec = documentCodec");
-        return builder.build();
-    }
-
-    private MethodSpec generateGetEncoderClass() {
-        ClassName clzz = ClassName.get(Class.class);
-        ParameterizedTypeName parameterizedTypeName =
-                ParameterizedTypeName.get(clzz, elementTypeName);
-
-        MethodSpec.Builder builder = MethodSpec.methodBuilder("getEncoderClass")
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(parameterizedTypeName)
-                .addStatement("return $T.class", elementTypeName);
-
-        return builder.build();
-    }
-
-    private MethodSpec generateEncodeMethod() {
-        MethodSpec.Builder builder = MethodSpec.methodBuilder("encode")
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(void.class)
-                .addParameter(BsonWriter.class, "writer")
-                .addParameter(elementTypeName, "value")
-                .addParameter(EncoderContext.class, "encoderContext");
-
-        var documentTypeName = TypeName.get(Document.class);
-        CodeBlock.Builder documentCodecBuilder = CodeBlock
-                .builder()
-                .addStatement("var doc = new $T()", documentTypeName);
-
-        for (Element recordComponent : recordComponents) {
-//            TypeMirror recordComponentTypeMirror = recordComponent.asType();
-            Name simpleName = recordComponent.getSimpleName();
-//            if (TypeName.get(String.class).equals(TypeName.get(recordComponentTypeMirror))) {
-//                messager.printMessage(Diagnostic.Kind.NOTE, "Types match");
-//            } else {
-//                messager.printMessage(Diagnostic.Kind.NOTE, "Types do not match");
-//            }
-            documentCodecBuilder.addStatement("doc.put($S, value.$L())", simpleName, simpleName);
-        }
-
-        documentCodecBuilder.addStatement("documentCodec.encode(writer, doc, encoderContext)")
-                .build();
-
-        builder.addCode(documentCodecBuilder.build());
-
-        return builder.build();
-    }
-
-    private MethodSpec generateDecodeMethod() {
-        MethodSpec.Builder builder = MethodSpec.methodBuilder("decode")
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(elementTypeName)
-                .addParameter(BsonReader.class, "reader")
-                .addParameter(DecoderContext.class, "decoderContext");
-
-        // Document document = documentCodec.decode(reader, decoderContext);
-        //Fruit fruit = new Fruit();
-        //if (document.getString("id") != null) {
-        //fruit.setId(document.getString("id"));
-        //}
-        //fruit.setName(document.getString("name"));
-        //fruit.setDescription(document.getString("description"));
-        //return fruit;
-
-        CodeBlock.Builder documentCodecBuilder = CodeBlock
-                .builder()
-                .addStatement("var doc = documentCodec.decode(reader, decoderContext)");
-
-        List<Name> constructorValues = new ArrayList<>();
-        for (Element recordComponent : recordComponents) {
+    List<Name> constructorValues = new ArrayList<>();
+    for (Element recordComponent : recordComponents) {
 //                    TypeMirror recordComponentTypeMirror = recordComponent.asType();
-            Name simpleName = recordComponent.getSimpleName();
-            TypeName componentTypeName = TypeName.get(recordComponent.asType());
-            if (TypeName.get(String.class).equals(componentTypeName)) {
-                documentCodecBuilder.addStatement("$T $L = doc.getString($S)", componentTypeName, simpleName, simpleName);
-            }
-            constructorValues.add(simpleName);
-
-            ////            if (TypeName.get(String.class).equals(TypeName.get(recordComponentTypeMirror))) {
-            ////                messager.printMessage(Diagnostic.Kind.NOTE, "Types match");
-            ////            } else {
-            ////                messager.printMessage(Diagnostic.Kind.NOTE, "Types do not match");
-            ////            }
-            //            documentCodecBuilder.addStatement("doc.put($S, value.$L())", simpleName.toString(), simpleName);
-            //        }
+      Name simpleName = recordComponent.getSimpleName();
+      TypeName componentTypeName = TypeName.get(recordComponent.asType());
+      messager.printMessage(Diagnostic.Kind.NOTE, String.format("Record Type: %s, Simple Name: %s", componentTypeName, simpleName));
+      if (TypeName.get(String.class).equals(componentTypeName)) {
+        documentCodecBuilder.addStatement("$T $L = doc.getString($S)", componentTypeName, simpleName, simpleName);
+      } else if (componentTypeName.isPrimitive()) {
+        String primitiveTypeName = componentTypeName.toString();
+        String methodSuffix = capitalize(primitiveTypeName);
+        if (primitiveTypeName.equals("int")) {
+          methodSuffix = "Integer";
         }
+        documentCodecBuilder.addStatement("$L $L = doc.get$L($S)", primitiveTypeName, simpleName, methodSuffix, simpleName);
+      } else if (TypeName.get(Integer.class).equals(componentTypeName)) {
+        documentCodecBuilder.addStatement("$T $L = doc.getInteger($S)", componentTypeName, simpleName, simpleName);
+      } else if (TypeName.get(Long.class).equals(componentTypeName)) {
+        documentCodecBuilder.addStatement("$T $L = doc.getLong($S)", componentTypeName, simpleName, simpleName);
+      } else if (TypeName.get(Double.class).equals(componentTypeName)) {
+        documentCodecBuilder.addStatement("$T $L = doc.getDouble($S)", componentTypeName, simpleName, simpleName);
+      } else if (TypeName.get(Boolean.class).equals(componentTypeName)) {
+        documentCodecBuilder.addStatement("$T $L = doc.getBoolean($S)", componentTypeName, simpleName, simpleName);
+      } else if (TypeName.get(Float.class).equals(componentTypeName)) {
+        documentCodecBuilder.addStatement("$T $L = doc.getFloat($S)", componentTypeName, simpleName, simpleName);
+      }else {
 
-        /*
-         private void renderBuildMethod(Element record, List<Element> recordComponents, PrintWriter out) {
-        out.println("    public %s build() {".formatted(record.getSimpleName()));
-        out.print("        return new %s(".formatted(record.getSimpleName()));
-        out.print(recordComponents.stream()
-                .map(o -> o.getSimpleName())
-                .collect(Collectors.joining(", ")));
-        out.println(");");
-        out.println("    }");
-        out.println();
-    }
-
-         */
-
-//        documentCodecBuilder.addStatement("return new $T()", elementTypeName, elementTypeName, elementTypeName);
-
-        String constructorVariables = constructorValues.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(", "));
-
-        builder.addCode(documentCodecBuilder.build());
-        builder.addStatement("return null");
-        return builder.build();
-    }
-
-    private boolean checkClassType() {
-        List<Class<?>> classes = List.of(
-                String.class,
-                Integer.class,
-                Long.class,
-                Short.class,
-                Character.class,
-                Boolean.class,
-                Float.class,
-                Double.class
-        );
-        return false;
-    }
-
-
-    public void generateCodecProvider() {
+      }
+      constructorValues.add(simpleName);
 
     }
+
+    String constructorVariables = constructorValues.stream()
+        .map(Object::toString)
+        .collect(Collectors.joining(", "));
+
+    documentCodecBuilder.addStatement("return new $T($L)", elementTypeName, constructorVariables);
+
+    builder.addCode(documentCodecBuilder.build());
+    return builder.build();
+  }
+
+  private boolean checkClassType() {
+    List<Class<?>> classes = List.of(
+        String.class,
+        Integer.class,
+        Long.class,
+        Short.class,
+        Character.class,
+        Boolean.class,
+        Float.class,
+        Double.class
+    );
+    return false;
+  }
+
+  String capitalize(String value) {
+    char[] chars = value.toCharArray();
+    chars[0] = Character.toUpperCase(chars[0]);
+    return new String(chars);
+  }
+
+  public void generateCodecProvider() {
+
+  }
 }
