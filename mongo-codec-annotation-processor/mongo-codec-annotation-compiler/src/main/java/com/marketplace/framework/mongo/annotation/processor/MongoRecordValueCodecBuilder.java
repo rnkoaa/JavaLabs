@@ -16,6 +16,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,7 +119,7 @@ public class MongoRecordValueCodecBuilder {
 //            } else {
 //                messager.printMessage(Diagnostic.Kind.NOTE, "Types do not match");
 //            }
-            documentCodecBuilder.addStatement("doc.put($S, value.$L())", simpleName.toString(), simpleName);
+            documentCodecBuilder.addStatement("doc.put($S, value.$L())", simpleName, simpleName);
         }
 
         documentCodecBuilder.addStatement("documentCodec.encode(writer, doc, encoderContext)")
@@ -150,6 +151,7 @@ public class MongoRecordValueCodecBuilder {
                 .builder()
                 .addStatement("var doc = documentCodec.decode(reader, decoderContext)");
 
+        List<Name> constructorValues = new ArrayList<>();
         for (Element recordComponent : recordComponents) {
 //                    TypeMirror recordComponentTypeMirror = recordComponent.asType();
             Name simpleName = recordComponent.getSimpleName();
@@ -157,6 +159,8 @@ public class MongoRecordValueCodecBuilder {
             if (TypeName.get(String.class).equals(componentTypeName)) {
                 documentCodecBuilder.addStatement("$T $L = doc.getString($S)", componentTypeName, simpleName, simpleName);
             }
+            constructorValues.add(simpleName);
+
             ////            if (TypeName.get(String.class).equals(TypeName.get(recordComponentTypeMirror))) {
             ////                messager.printMessage(Diagnostic.Kind.NOTE, "Types match");
             ////            } else {
@@ -165,6 +169,27 @@ public class MongoRecordValueCodecBuilder {
             //            documentCodecBuilder.addStatement("doc.put($S, value.$L())", simpleName.toString(), simpleName);
             //        }
         }
+
+        /*
+         private void renderBuildMethod(Element record, List<Element> recordComponents, PrintWriter out) {
+        out.println("    public %s build() {".formatted(record.getSimpleName()));
+        out.print("        return new %s(".formatted(record.getSimpleName()));
+        out.print(recordComponents.stream()
+                .map(o -> o.getSimpleName())
+                .collect(Collectors.joining(", ")));
+        out.println(");");
+        out.println("    }");
+        out.println();
+    }
+
+         */
+
+//        documentCodecBuilder.addStatement("return new $T()", elementTypeName, elementTypeName, elementTypeName);
+
+        String constructorVariables = constructorValues.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+
         builder.addCode(documentCodecBuilder.build());
         builder.addStatement("return null");
         return builder.build();
