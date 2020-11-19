@@ -45,7 +45,7 @@ public class MongoRecordValueProcessor extends AbstractProcessor {
             try {
                 MongoRecordValueCodecBuilder codecBuilder = new MongoRecordValueCodecBuilder(filer, element, messager);
                 codecBuilder.generateCodec();
-                codecBuilder.generateCodecProvider();
+//                new CodecProviderBuilder(filer, element).generateCodecProvider();
             } catch (IOException e) {
                 error(e.getMessage());
             }

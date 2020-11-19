@@ -4,7 +4,7 @@ import javax.persistence.Id;
 import java.util.UUID;
 
 
-public class Person {
+public class Person/*(UUID id, String name, int age, Address address)*/ {
     @Id
     private UUID id;
 
@@ -16,10 +16,12 @@ public class Person {
     public Person() {
     }
 
-    public Person(String name, int age, Address address) {
+    public Person(UUID id, String name, int age, Address address, ItemId itemId) {
+        this.id = id;
         this.name = name;
         this.age = age;
         this.address = address;
+        this.itemId = itemId;
     }
 
     public UUID getId() {

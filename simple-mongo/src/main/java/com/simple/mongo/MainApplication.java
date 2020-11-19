@@ -2,13 +2,8 @@ package com.simple.mongo;
 
 import com.mongodb.client.result.InsertOneResult;
 import com.simple.mongo.config.MongoConfig;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import static com.mongodb.client.model.Filters.eq;
 
 public class MainApplication {
 
@@ -18,12 +13,18 @@ public class MainApplication {
 //        JacksonMongoCollection<Person> collection = JacksonMongoCollection.builder()
 //                .build(mongoClient, "simple_mongo", "persons2", Person.class, UuidRepresentation.STANDARD);
         var collection = mongoDatabase.getCollection("persons3", Person.class);
-        Person ada = new Person("Ada Byron", 20, new Address("St James Square", "London", "W1"));
-        ada.setId(UUID.randomUUID());
-        ada.setItemId(ItemId.newItemId());
+        Person person = new Person(UUID.randomUUID(),
+                "Nana Kwame",
+                30,
+                new Address("123 main street", "Anywhere", "55123"),
+                ItemId.newItemId()
+                );
+//        Person ada = new Person("Ada Byron", 20, new Address("St James Square", "London", "W1"));
+//        ada.setId(UUID.randomUUID());
+//        ada.setItemId(ItemId.newItemId());
 
 
-        collection.find(eq("itemId", "a36be44e-c1ad-444c-b165-6f6015ec7da2")).first()
+      /*  collection.find(eq("itemId", "a36be44e-c1ad-444c-b165-6f6015ec7da2")).first()
                 .subscribe(new Subscriber<Person>() {
                     @Override
                     public void onSubscribe(Subscription s) {
@@ -45,7 +46,7 @@ public class MainApplication {
                     public void onComplete() {
                         System.out.println("onComplete.");
                     }
-                });
+                });*/
 
 //        publisher.subscribe(new Subscriber<Success>() {
 //            @Override
@@ -73,7 +74,10 @@ public class MainApplication {
 //        collection.find()
 //        collection.insert
 
-//        collection.insertOne(ada);
+        InsertOneResult insertOneResult = collection.insertOne(person);
+        if(insertOneResult.wasAcknowledged()){
+            System.out.println("Successfully applied insert");
+        }
 //        Document doc =
 //                new Document("name", "MongoDB")
 //                        .append("type", "database")
@@ -84,7 +88,7 @@ public class MainApplication {
 //        collection.insertOne(doc)
 //                .subscribe(new SubscriberHelpers.PrintDocumentSubscriber());
 
-        TimeUnit.SECONDS.sleep(5);
-        System.out.println("Hello, World!");
+//        TimeUnit.SECONDS.sleep(5);
+        System.out.println("Done.");
     }
 }

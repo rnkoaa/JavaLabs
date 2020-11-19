@@ -2,16 +2,19 @@ package com.simple.mongo.config;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoClients;
-import com.mongodb.reactivestreams.client.MongoCollection;
-import com.mongodb.reactivestreams.client.MongoDatabase;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.bson.UuidRepresentation;
+import org.bson.codecs.Codec;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
+import static org.bson.codecs.configuration.CodecRegistries.fromCodecs;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 
 public class MongoConfig {
@@ -28,14 +31,21 @@ public class MongoConfig {
     }
 
     private static CodecRegistry codecRegistries() {
-        return CodecRegistries.fromRegistries(
+        CodecRegistry pojoCodecRegistry = fromProviders(PojoCodecProvider.builder().automatic(true).build());
+        CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
                 MongoClientSettings.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()),
-                // save uuids as UUID, instead of LUUID
-                CodecRegistries.fromProviders(new UuidCodecProvider(UuidRepresentation.STANDARD),
-                        new ItemIdCodecProvider()),
-                MongoClientSettings.getDefaultCodecRegistry()
+                CodecRegistries.fromProviders(pojoCodecRegistry),
+                fromProviders(new UuidCodecProvider(UuidRepresentation.STANDARD)),
+                fromCodecs(new AddressCodec()),
+                fromProviders(new ItemIdCodecProvider()),
+                fromProviders(new PersonCodecProvider(MongoClientSettings.getDefaultCodecRegistry()))
         );
+        return codecRegistry;
+//        return CodecRegistries.fromRegistries(
+//                MongoClientSettings.getDefaultCodecRegistry(),
+//                pojoCodecRegistry,
+//                fromProviders(new AddressCodecProvider())
+//        );
     }
 
     public static MongoDatabase mongoDatabase() {
