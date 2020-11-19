@@ -10,7 +10,7 @@ public class ItemIdCodecProvider implements CodecProvider {
     @Override
     public <T> Codec<T> get(Class<T> clazz, CodecRegistry registry) {
         if (clazz == ItemId.class) {
-            return (Codec<T>) new ItemIdCodec();
+            return (Codec<T>) new ItemIdCodec(registry);
         }
 
         return null;

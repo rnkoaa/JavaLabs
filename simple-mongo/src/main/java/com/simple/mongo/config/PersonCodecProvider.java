@@ -7,17 +7,12 @@ import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 
 public class PersonCodecProvider implements CodecProvider {
-    private final CodecRegistry codecRegistry;
-
-    public PersonCodecProvider(CodecRegistry codecRegistry) {
-        this.codecRegistry = codecRegistry;
-    }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> Codec<T> get(Class<T> clazz, CodecRegistry registry) {
         if (clazz == Person.class) {
-            return (Codec<T>) new PersonCodec(codecRegistry);
+            return (Codec<T>) new PersonCodec(registry);
         }
 
         return null;
