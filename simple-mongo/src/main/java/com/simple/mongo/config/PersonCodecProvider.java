@@ -1,6 +1,5 @@
 package com.simple.mongo.config;
 
-import com.simple.mongo.Address;
 import com.simple.mongo.Person;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecProvider;
@@ -14,7 +13,6 @@ public class PersonCodecProvider implements CodecProvider {
         if (clazz == Person.class) {
             return (Codec<T>) new PersonCodec(registry);
         }
-
         return null;
     }
 }

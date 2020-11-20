@@ -25,8 +25,6 @@ public class MongoConfig {
     MongoClientSettings settings = MongoClientSettings.builder()
         .applyConnectionString(connectionString)
         .codecRegistry(codecRegistries())
-
-//                .co
         .uuidRepresentation(UuidRepresentation.STANDARD)
         .build();
     return MongoClients.create(settings);
@@ -34,15 +32,14 @@ public class MongoConfig {
 
   private static CodecRegistry codecRegistries() {
     CodecRegistry pojoCodecRegistry = fromProviders(PojoCodecProvider.builder().automatic(true).build());
-    CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
+    return CodecRegistries.fromRegistries(
         MongoClientSettings.getDefaultCodecRegistry(),
         CodecRegistries.fromProviders(pojoCodecRegistry),
         fromProviders(new UuidCodecProvider(UuidRepresentation.STANDARD)),
-        fromCodecs(new AddressCodec(MongoClientSettings.getDefaultCodecRegistry())),
+        fromProviders(new AddressCodecProvider()),
         fromProviders(new ItemIdCodecProvider()),
         fromProviders(new PersonCodecProvider())
     );
-    return codecRegistry;
   }
 
   public static MongoDatabase mongoDatabase() {

@@ -28,7 +28,6 @@ public class PersonCodec implements CollectibleCodec<Person> {
     String name = document.getString("name");
     int age = document.getInteger("age");
 
-//    Address address = document.get("address", Address.class);
     Document addressDocument = document.get("address", Document.class);
     Address address = new AddressConverter().convert(addressDocument);
 

@@ -26,7 +26,6 @@ public class ItemIdCodec implements Codec<ItemId> {
             return ItemId.fromString(value);
         }
         return null;
-
     }
 
     @Override
