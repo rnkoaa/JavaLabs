@@ -42,13 +42,10 @@ public class MongoRecordValueProcessor extends AbstractProcessor {
                 error(String.format("Only classes can be annotated with @%s", MongoStringCodec.class.getSimpleName()), element);
                 return true; // Exit processing
             }
-
-
-
             try {
                 MongoRecordValueCodecBuilder codecBuilder = new MongoRecordValueCodecBuilder(filer, element, messager);
                 codecBuilder.generateCodec();
-                codecBuilder.generateCodecProvider();
+//                new CodecProviderBuilder(filer, element).generateCodecProvider();
             } catch (IOException e) {
                 error(e.getMessage());
             }

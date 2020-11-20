@@ -1,11 +1,11 @@
 package com.simple.mongo;
 
-import javax.persistence.Id;
 import java.util.UUID;
 
 
-public class Person {
-    @Id
+public record Person(UUID id, String name, int age, Address address, ItemId itemId) {
+//  public class Person {
+    /*@Id
     private UUID id;
 
     private String name;
@@ -16,10 +16,12 @@ public class Person {
     public Person() {
     }
 
-    public Person(String name, int age, Address address) {
+    public Person(UUID id, String name, int age, Address address, ItemId itemId) {
+        this.id = id;
         this.name = name;
         this.age = age;
         this.address = address;
+        this.itemId = itemId;
     }
 
     public UUID getId() {
@@ -71,7 +73,7 @@ public class Person {
                 ", address=" + address +
                 ", itemId=" + itemId +
                 '}';
-    }
+    }*/
 
-    // Rest of implementation
+  // Rest of implementation
 }

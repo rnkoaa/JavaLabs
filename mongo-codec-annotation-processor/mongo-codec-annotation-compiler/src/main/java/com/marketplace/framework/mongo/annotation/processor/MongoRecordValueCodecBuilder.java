@@ -1,12 +1,17 @@
 package com.marketplace.framework.mongo.annotation.processor;
 
 import com.squareup.javapoet.*;
+
+import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
+
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
 import org.bson.Document;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.DocumentCodec;
 import org.bson.codecs.EncoderContext;
+import org.bson.codecs.configuration.CodecRegistry;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -16,12 +21,14 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 // https://www.howtobuildsoftware.com/index.php/how-do/oqS/java-mongodb-encoding-bson-mongodb-bson-codec-not-being-used-while-encoding-object
 // https://www.edureka.co/blog/mongodb-client/
 public class MongoRecordValueCodecBuilder {
+
     private final Filer filer;
     private final TypeMirror elementTypeMirror;
     private final ClassName className;
@@ -60,6 +67,9 @@ public class MongoRecordValueCodecBuilder {
                 .addSuperinterface(parameterizedTypeName)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addField(FieldSpec
+                        .builder(CodecRegistry.class, "codecRegistry", Modifier.PRIVATE, Modifier.FINAL)
+                        .build())
+                .addField(FieldSpec
                         .builder(DocumentCodec.class, "documentCodec", Modifier.PRIVATE, Modifier.FINAL)
                         .build())
                 .addMethod(generateConstructor())
@@ -77,7 +87,9 @@ public class MongoRecordValueCodecBuilder {
     private MethodSpec generateConstructor() {
         MethodSpec.Builder builder = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
+                .addParameter(CodecRegistry.class, "codecRegistry")
                 .addParameter(DocumentCodec.class, "documentCodec");
+        builder.addStatement("this.codecRegistry = codecRegistry");
         builder.addStatement("this.documentCodec = documentCodec");
         return builder.build();
     }
@@ -111,18 +123,12 @@ public class MongoRecordValueCodecBuilder {
                 .addStatement("var doc = new $T()", documentTypeName);
 
         for (Element recordComponent : recordComponents) {
-//            TypeMirror recordComponentTypeMirror = recordComponent.asType();
             Name simpleName = recordComponent.getSimpleName();
-//            if (TypeName.get(String.class).equals(TypeName.get(recordComponentTypeMirror))) {
-//                messager.printMessage(Diagnostic.Kind.NOTE, "Types match");
-//            } else {
-//                messager.printMessage(Diagnostic.Kind.NOTE, "Types do not match");
-//            }
-            documentCodecBuilder.addStatement("doc.put($S, value.$L())", simpleName.toString(), simpleName);
+            documentCodecBuilder.addStatement("doc.put($S, value.$L())", simpleName, simpleName);
         }
 
-        documentCodecBuilder.addStatement("documentCodec.encode(writer, doc, encoderContext)")
-                .build();
+//    documentCodecBuilder.addStatement("documentCodec.encode(writer, doc, encoderContext)")
+//        .build();
 
         builder.addCode(documentCodecBuilder.build());
 
@@ -136,37 +142,52 @@ public class MongoRecordValueCodecBuilder {
                 .returns(elementTypeName)
                 .addParameter(BsonReader.class, "reader")
                 .addParameter(DecoderContext.class, "decoderContext");
+        CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+        codeBlockBuilder.addStatement("var doc = documentCodec.decode(reader, decoderContext)");
+//        codeBlockBuilder.addStatement("reader.readStartDocument()");
 
-        // Document document = documentCodec.decode(reader, decoderContext);
-        //Fruit fruit = new Fruit();
-        //if (document.getString("id") != null) {
-        //fruit.setId(document.getString("id"));
-        //}
-        //fruit.setName(document.getString("name"));
-        //fruit.setDescription(document.getString("description"));
-        //return fruit;
-
-        CodeBlock.Builder documentCodecBuilder = CodeBlock
-                .builder()
-                .addStatement("var doc = documentCodec.decode(reader, decoderContext)");
-
+        List<Name> constructorValues = new ArrayList<>();
         for (Element recordComponent : recordComponents) {
 //                    TypeMirror recordComponentTypeMirror = recordComponent.asType();
             Name simpleName = recordComponent.getSimpleName();
             TypeName componentTypeName = TypeName.get(recordComponent.asType());
+            messager.printMessage(Diagnostic.Kind.NOTE, String.format("Record Type: %s, Simple Name: %s", componentTypeName, simpleName));
             if (TypeName.get(String.class).equals(componentTypeName)) {
-                documentCodecBuilder.addStatement("$T $L = doc.getString($S)", componentTypeName, simpleName, simpleName);
+                codeBlockBuilder.addStatement("$T $L = doc.getString($S)", componentTypeName, simpleName, simpleName);
+            } else if (componentTypeName.isPrimitive()) {
+                String primitiveTypeName = componentTypeName.toString();
+                String methodSuffix = capitalize(primitiveTypeName);
+                if (primitiveTypeName.equals("int")) {
+                    methodSuffix = "Integer";
+                }
+                codeBlockBuilder.addStatement("$L $L = doc.get$L($S)", primitiveTypeName, simpleName, methodSuffix, simpleName);
+            } else if (TypeName.get(Integer.class).equals(componentTypeName)) {
+                codeBlockBuilder.addStatement("$T $L = doc.getInteger($S)", componentTypeName, simpleName, simpleName);
+            } else if (TypeName.get(Long.class).equals(componentTypeName)) {
+                codeBlockBuilder.addStatement("$T $L = doc.getLong($S)", componentTypeName, simpleName, simpleName);
+            } else if (TypeName.get(Double.class).equals(componentTypeName)) {
+                codeBlockBuilder.addStatement("$T $L = doc.getDouble($S)", componentTypeName, simpleName, simpleName);
+            } else if (TypeName.get(Boolean.class).equals(componentTypeName)) {
+                codeBlockBuilder.addStatement("$T $L = doc.getBoolean($S)", componentTypeName, simpleName, simpleName);
+            } else if (TypeName.get(Float.class).equals(componentTypeName)) {
+                codeBlockBuilder.addStatement("$T $L = doc.getFloat($S)", componentTypeName, simpleName, simpleName);
+            } else {
+//                Codec<LocalDate> dateCodec = codecRegistry.get(LocalDate.class);
             }
-            ////            if (TypeName.get(String.class).equals(TypeName.get(recordComponentTypeMirror))) {
-            ////                messager.printMessage(Diagnostic.Kind.NOTE, "Types match");
-            ////            } else {
-            ////                messager.printMessage(Diagnostic.Kind.NOTE, "Types do not match");
-            ////            }
-            //            documentCodecBuilder.addStatement("doc.put($S, value.$L())", simpleName.toString(), simpleName);
-            //        }
+            constructorValues.add(simpleName);
+
         }
-        builder.addCode(documentCodecBuilder.build());
-        builder.addStatement("return null");
+//
+        String constructorVariables = constructorValues.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+
+        codeBlockBuilder.addStatement("return new $T($L)", elementTypeName, constructorVariables);
+//
+//    builder.addCode(documentCodecBuilder.build());
+//        codeBlockBuilder.addStatement("reader.readEndDocument()");
+        builder.addCode(codeBlockBuilder.build())
+                .addStatement("return null");
         return builder.build();
     }
 
@@ -184,6 +205,11 @@ public class MongoRecordValueCodecBuilder {
         return false;
     }
 
+    String capitalize(String value) {
+        char[] chars = value.toCharArray();
+        chars[0] = Character.toUpperCase(chars[0]);
+        return new String(chars);
+    }
 
     public void generateCodecProvider() {
 

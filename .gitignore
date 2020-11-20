@@ -16,6 +16,8 @@ dist/
 *.class
 *.jar
 !gradle.jar
+!gradle-wrapper.jar
+!**/gradle-wrapper.jar
 .gradle
 **/build/
 
