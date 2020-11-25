@@ -21,4 +21,6 @@ public interface EventStream<T> {
   }
 
   void append(T entity, int expectedVersion);
+
+  int size();
 }
