@@ -5,6 +5,7 @@ import com.marketplace.eventstoredb.classifiedad.ClassifiedAdTitleUpdated;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,6 +51,35 @@ class InMemoryEventStoreDbTest {
     assertThat(eventStore.size()).isEqualTo(1);
 
     eventStream = eventStore.load(streamId);
+    assertThat(eventStream.getVersion()).isEqualTo(2);
+  }
+
+  @Test
+  void multipleEventsCanBeAdded() {
+    String classifiedAdId1 = "9d5d69ee-eadd-4352-942e-47935e194d22";
+    String ownerId1 = "89b69f4f-e36e-4f2b-baa0-d47057e02117";
+    var classifiedAdCreated =
+        ClassifiedAdCreated.builder()
+            .id(UUID.fromString(classifiedAdId1))
+            .ownerId(UUID.fromString(ownerId1))
+            .build();
+
+    String streamId = String.format("%s:%s", classifiedAdCreated.aggregateName(), classifiedAdId1);
+
+    assertThat(eventStore.size()).isEqualTo(1);
+
+    var classifiedAdTextUpdated =
+        ClassifiedAdTitleUpdated.builder()
+            .id(UUID.fromString(classifiedAdId1))
+            .title("test title")
+            .build();
+
+    var result =
+        eventStore.append(streamId, 0, List.of(classifiedAdCreated, classifiedAdTextUpdated));
+    //   assertThat(result).isIns
+    assertThat(eventStore.size()).isEqualTo(1);
+
+    EventStream<Event> eventStream = eventStore.load(streamId);
     assertThat(eventStream.getVersion()).isEqualTo(2);
   }
 
