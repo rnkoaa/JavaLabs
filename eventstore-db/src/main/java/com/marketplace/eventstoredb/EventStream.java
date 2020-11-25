@@ -19,4 +19,6 @@ public interface EventStream<T> {
   default Instant updatedAt() {
     return Instant.now();
   }
+
+  void append(T entity, int expectedVersion);
 }

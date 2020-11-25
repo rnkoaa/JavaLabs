@@ -3,6 +3,7 @@ package com.marketplace.eventstoredb.classifiedad;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.marketplace.eventstoredb.Event;
+import com.marketplace.eventstoredb.framework.ForAggregate;
 import lombok.Builder;
 import lombok.Value;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Value
 @Builder
 @JsonDeserialize(builder = ClassifiedAdTitleUpdated.ClassifiedAdTitleChangedBuilder.class)
+@ForAggregate(ClassifiedAd.class)
 public class ClassifiedAdTitleUpdated implements Event {
   UUID id;
   String title;
@@ -27,6 +29,11 @@ public class ClassifiedAdTitleUpdated implements Event {
 
   public String getTitle() {
     return title;
+  }
+
+  @Override
+  public String aggregateName() {
+    return ClassifiedAd.class.getSimpleName();
   }
 
   @JsonPOJOBuilder(withPrefix = "")

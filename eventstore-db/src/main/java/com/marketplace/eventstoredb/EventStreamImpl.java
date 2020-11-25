@@ -8,12 +8,16 @@ public class EventStreamImpl implements EventStream<Event> {
   private List<Event> events;
   private final String id;
   private final String name;
-  private final int version;
+  private int version;
   private final Instant createdAt;
-  private final Instant updatedAt;
+  private  Instant updatedAt;
 
   public EventStreamImpl(String id, String name, int version, Instant createdAt) {
     this(id, name, version, createdAt, Instant.now());
+  }
+
+  public EventStreamImpl(String id) {
+    this(id, "", 0, Instant.now(), Instant.now());
   }
 
   public EventStreamImpl(String id, String name, int version, List<Event> events) {
@@ -59,5 +63,12 @@ public class EventStreamImpl implements EventStream<Event> {
   @Override
   public Instant updatedAt() {
     return updatedAt;
+  }
+
+  @Override
+  public void append(Event entity, int expectedVersion) {
+    this.events.add(entity);
+    this.version = expectedVersion;
+    this.updatedAt = Instant.now();
   }
 }

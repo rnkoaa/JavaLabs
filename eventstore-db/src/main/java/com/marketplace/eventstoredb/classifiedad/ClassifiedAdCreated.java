@@ -13,26 +13,20 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @JsonDeserialize(builder = ClassifiedAdCreated.ClassifiedAdCreatedBuilder.class)
 public class ClassifiedAdCreated implements Event {
-    UUID id;
-    UUID userId;
+  UUID id;
+  UUID ownerId;
 
-    public ClassifiedAdCreated(UUID id, UUID userId) {
-        this.id = id;
-        this.userId = userId;
-    }
+  @Override
+  public UUID getId() {
+    return id;
+  }
 
-    @Override
-    public UUID getId() {
-        return id;
-    }
+  @Override
+  public String aggregateName() {
+    return ClassifiedAd.class.getSimpleName();
+  }
 
-    public UUID getUserId() {
-        return userId;
-    }
-
-    @JsonPOJOBuilder(withPrefix = "")
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class ClassifiedAdCreatedBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static class ClassifiedAdCreatedBuilder {}
 }
