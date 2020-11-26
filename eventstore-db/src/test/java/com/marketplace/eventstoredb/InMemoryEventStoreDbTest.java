@@ -1,5 +1,6 @@
 package com.marketplace.eventstoredb;
 
+import com.marketplace.eventstoredb.AppendResult.Success;
 import com.marketplace.eventstoredb.classifiedad.ClassifiedAdCreated;
 import com.marketplace.eventstoredb.classifiedad.ClassifiedAdTitleUpdated;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class InMemoryEventStoreDbTest {
+
   private EventStore<Event> eventStore;
 
   @BeforeEach
@@ -45,13 +47,17 @@ class InMemoryEventStoreDbTest {
             .build();
 
     EventStream<Event> eventStream = eventStore.load(streamId);
-    assertThat(eventStream.getVersion()).isEqualTo(1);
+    assertThat(eventStream.getVersion()).isEqualTo(0);
 
-    eventStore.append(streamId, eventStream.getVersion(), classifiedAdTextUpdated);
+    int expectedVersion = eventStream.getVersion() + 1;
+    var appendResult = eventStore.append(streamId, expectedVersion, classifiedAdTextUpdated);
     assertThat(eventStore.size()).isEqualTo(1);
+    assertThat(appendResult).isInstanceOf(Success.class);
 
     eventStream = eventStore.load(streamId);
-    assertThat(eventStream.getVersion()).isEqualTo(2);
+    assertThat(eventStream.getVersion()).isEqualTo(1);
+
+    assertThat(eventStream.size()).isEqualTo(2);
   }
 
   @Test

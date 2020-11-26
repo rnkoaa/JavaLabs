@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventStreamImpl implements EventStream<Event> {
+
   private List<Event> events;
   private final String id;
   private final String name;
   private int version;
   private final Instant createdAt;
-  private  Instant updatedAt;
+  private Instant updatedAt;
 
   public EventStreamImpl(String id, String name, int version, Instant createdAt) {
     this(id, name, version, createdAt, Instant.now());
@@ -70,5 +71,10 @@ public class EventStreamImpl implements EventStream<Event> {
     this.events.add(entity);
     this.version = expectedVersion;
     this.updatedAt = Instant.now();
+  }
+
+  @Override
+  public int size() {
+    return events.size();
   }
 }

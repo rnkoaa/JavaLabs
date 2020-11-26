@@ -1,11 +1,14 @@
 package com.marketplace.eventstoredb;
 
+import com.marketplace.eventstoredb.AppendResult.Failure;
+import com.marketplace.eventstoredb.AppendResult.Success;
 import java.util.*;
 import java.util.stream.Collectors;
 
 // StreamInfoId : ClassifiedAdId:aggregateId
 // eventId: Classified:aggregateId:eventVersion:eventId
 public class InMemoryEventStoreDb implements EventStore<Event> {
+
   private final Map<String, List<EventEntity>> entityStore = new HashMap<>();
 
   @Override
@@ -25,7 +28,7 @@ public class InMemoryEventStoreDb implements EventStore<Event> {
   }
 
   @Override
-  public int version(String streamId) {
+  public int getVersion(String streamId) {
     List<EventEntity> eventStream = entityStore.get(streamId);
     if (eventStream == null || eventStream.isEmpty()) {
       return 0;
@@ -33,6 +36,12 @@ public class InMemoryEventStoreDb implements EventStore<Event> {
 
     eventStream.sort(Comparator.comparing(EventEntity::getVersion));
     return eventStream.get(eventStream.size() - 1).getVersion();
+  }
+
+  @Override
+  public int nextVersion(String streamId) {
+    int currentVersion = getVersion(streamId);
+    return ++currentVersion;
   }
 
   @Override
@@ -54,33 +63,33 @@ public class InMemoryEventStoreDb implements EventStore<Event> {
   }
 
   @Override
-  public boolean append(String streamId, int expectedVersion, List<Event> events) {
-    return false;
+  public AppendResult append(String streamId, int expectedVersion, List<Event> events) {
+    return new Failure("Not Implemented yet");
   }
 
   @Override
-  public boolean append(String streamId, int expectedVersion, Event event) {
-    int currentVersion = version(streamId);
+  public AppendResult append(String streamId, int expectedVersion, Event event) {
+    int currentVersion = getVersion(streamId);
+    int nextVersion = currentVersion + 1;
 
     // Concurrency check.
-    //    if ((!currentVersion && expectedVersion == 0) || (currentVersion == expectedVersion)) {}
-    if (currentVersion == expectedVersion) {
+//        if ((!currentVersion && expectedVersion == 0) || (currentVersion == expectedVersion)) {}
+    if ((expectedVersion == 0) || nextVersion == expectedVersion) {
       var streamInfo =
           StreamInfo.builder()
               .id(String.format("%s:%s", event.aggregateName(), event.getId()))
               .version(expectedVersion)
               .build();
-      var entity = EventEntity.fromEvent(streamId, event, ++currentVersion, streamInfo);
+      var entity = EventEntity.fromEvent(streamId, event, expectedVersion, streamInfo);
       List<EventEntity> eventStream = entityStore.get(streamId);
       if (eventStream == null) {
         eventStream = new ArrayList<>();
       }
       eventStream.add(entity);
       entityStore.put(streamId, eventStream);
-      return true;
+      return new Success();
     }
-    throw new UnExpectedVersionException(
-        String.format("expected version: %d, actual: %d", expectedVersion, currentVersion));
+    return new Failure(String.format("expected version: %d, actual: %d", expectedVersion, nextVersion));
   }
 
   @Override
@@ -88,14 +97,10 @@ public class InMemoryEventStoreDb implements EventStore<Event> {
     return entityStore.size();
   }
 
-  //
-  //  @Override
-  //  public boolean append(String streamId, int expectedVersion, List<Event> events) {
-  //    streamId,
-  //            expectedVersion,
-  //            SerializeEvents(streamId, expectedVersion, events)
-  //    return false;
-  //  }
+  @Override
+  public int streamSize(String streamId) {
+    return load(streamId).size();
+  }
 
   private static String serializeEvents(String streamId, int expectedVersion, List<Event> events) {
     //    var items = events.Select(e => new EventWrapper
