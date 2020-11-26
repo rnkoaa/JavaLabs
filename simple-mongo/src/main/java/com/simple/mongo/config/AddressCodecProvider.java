@@ -11,7 +11,7 @@ public class AddressCodecProvider implements CodecProvider {
     @Override
     public <T> Codec<T> get(Class<T> clazz, CodecRegistry registry) {
         if (clazz == Address.class) {
-            return (Codec<T>) new AddressCodec();
+            return (Codec<T>) new AddressCodec(registry);
         }
 
         return null;
