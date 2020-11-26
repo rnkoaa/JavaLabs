@@ -15,10 +15,16 @@ import java.util.UUID;
 public class ClassifiedAdCreated implements Event {
   UUID id;
   UUID ownerId;
+  UUID aggregateId;
 
   @Override
   public UUID getId() {
     return id;
+  }
+
+  @Override
+  public UUID aggregateId() {
+    return aggregateId;
   }
 
   @Override

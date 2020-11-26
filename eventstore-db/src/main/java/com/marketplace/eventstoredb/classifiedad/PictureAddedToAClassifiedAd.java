@@ -18,10 +18,16 @@ public class PictureAddedToAClassifiedAd implements Event {
   int height;
   int width;
   int order;
+  UUID aggregateId;
 
   @Override
   public UUID getId() {
     return classifiedAdId;
+  }
+
+  @Override
+  public UUID aggregateId() {
+    return aggregateId;
   }
 
   @JsonPOJOBuilder(withPrefix = "")

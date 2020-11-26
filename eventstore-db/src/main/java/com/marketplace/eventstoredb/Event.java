@@ -10,6 +10,8 @@ public interface Event {
 
   UUID getId();
 
+  UUID aggregateId();
+
   default String aggregateName() {
     return getClass().getSimpleName();
   }

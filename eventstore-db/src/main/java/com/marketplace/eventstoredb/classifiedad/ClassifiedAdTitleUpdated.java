@@ -16,15 +16,16 @@ import java.util.UUID;
 public class ClassifiedAdTitleUpdated implements Event {
   UUID id;
   String title;
-
-  public ClassifiedAdTitleUpdated(UUID id, String title) {
-    this.id = id;
-    this.title = title;
-  }
+  UUID aggregateId;
 
   @Override
   public UUID getId() {
     return id;
+  }
+
+  @Override
+  public UUID aggregateId() {
+    return aggregateId;
   }
 
   public String getTitle() {

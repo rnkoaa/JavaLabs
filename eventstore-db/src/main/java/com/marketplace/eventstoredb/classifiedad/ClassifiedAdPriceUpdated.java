@@ -15,26 +15,17 @@ import java.util.UUID;
 public class ClassifiedAdPriceUpdated implements Event {
   UUID id;
   BigDecimal price;
-
   String currencyCode;
-
-  public ClassifiedAdPriceUpdated(UUID id, BigDecimal price, String currencyCode) {
-    this.id = id;
-    this.price = price;
-    this.currencyCode = currencyCode;
-  }
+  UUID aggregateId;
 
   @Override
   public UUID getId() {
     return id;
   }
 
-  public BigDecimal getPrice() {
-    return price;
-  }
-
-  public String getCurrencyCode() {
-    return currencyCode;
+  @Override
+  public UUID aggregateId() {
+    return aggregateId;
   }
 
   @JsonPOJOBuilder(withPrefix = "")

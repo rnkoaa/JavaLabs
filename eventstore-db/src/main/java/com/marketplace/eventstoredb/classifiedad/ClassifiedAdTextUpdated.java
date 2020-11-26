@@ -13,20 +13,17 @@ import java.util.UUID;
 @JsonDeserialize(builder = ClassifiedAdTextUpdated.ClassifiedAdTitleChangedBuilder.class)
 public class ClassifiedAdTextUpdated implements Event {
   UUID id;
-  String title;
-
-  public ClassifiedAdTextUpdated(UUID id, String title) {
-    this.id = id;
-    this.title = title;
-  }
+  String text;
+  UUID aggregateId;
 
   @Override
   public UUID getId() {
     return id;
   }
 
-  public String getTitle() {
-    return title;
+  @Override
+  public UUID aggregateId() {
+    return aggregateId;
   }
 
   @JsonPOJOBuilder(withPrefix = "")

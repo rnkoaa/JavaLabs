@@ -12,19 +12,19 @@ import java.util.UUID;
 @Builder
 @JsonDeserialize(builder = ClassifiedAdSentForReview.ClassifiedAdSentForReviewBuilder.class)
 public class ClassifiedAdSentForReview implements Event {
-    UUID id;
+  UUID id;
+  UUID aggregateId;
 
-    public ClassifiedAdSentForReview(UUID id) {
-        this.id = id;
-    }
+  @Override
+  public UUID getId() {
+    return id;
+  }
 
-    @Override
-    public UUID getId() {
-        return id;
-    }
+  @Override
+  public UUID aggregateId() {
+    return aggregateId;
+  }
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class ClassifiedAdSentForReviewBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class ClassifiedAdSentForReviewBuilder {}
 }

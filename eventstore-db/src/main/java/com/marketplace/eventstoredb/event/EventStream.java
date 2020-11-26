@@ -1,4 +1,4 @@
-package com.marketplace.eventstoredb;
+package com.marketplace.eventstoredb.event;
 
 import java.time.Instant;
 import java.util.List;

@@ -12,16 +12,20 @@ import java.util.UUID;
 @Builder
 @JsonDeserialize(builder = ClassifiedAdApproved.ClassifiedApprovedBuilder.class)
 public class ClassifiedAdApproved implements Event {
-    UUID id;
-    UUID userId;
+  UUID id;
+  UUID aggregateId;
+  UUID userId;
 
-    @Override
-    public UUID getId() {
-        return null;
-    }
+  @Override
+  public UUID getId() {
+    return id;
+  }
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class ClassifiedApprovedBuilder {
+  @Override
+  public UUID aggregateId() {
+    return aggregateId;
+  }
 
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class ClassifiedApprovedBuilder {}
 }

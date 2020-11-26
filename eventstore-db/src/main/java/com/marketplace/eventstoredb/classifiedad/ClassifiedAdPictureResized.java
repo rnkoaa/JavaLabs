@@ -12,14 +12,20 @@ import java.util.UUID;
 @Builder
 @JsonDeserialize(builder = ClassifiedAdPictureResized.ClassifiedAdPictureResizedBuilder.class)
 public class ClassifiedAdPictureResized implements Event {
-  UUID classifiedAdId;
+  UUID id;
   UUID pictureId;
   int height;
   int width;
+  UUID aggregateId;
 
   @Override
   public UUID getId() {
-    return getClassifiedAdId();
+    return id;
+  }
+
+  @Override
+  public UUID aggregateId() {
+    return aggregateId;
   }
 
   @JsonPOJOBuilder(withPrefix = "")
