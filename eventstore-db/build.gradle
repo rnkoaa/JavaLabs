@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'groovy'
 //    id 'jacoco' // HERE!
 }
 
@@ -23,11 +24,37 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+  functional {
+    groovy {
+      srcDirs += "src/functional/groovy"
+    }
+    resources {
+      srcDirs += file("src/functional/groovy")
+    }
+    compileClasspath += main.output + test.output
+    runtimeClasspath += main.output + test.output
+  }
+}
 
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    functionalImplementation.extendsFrom testImplementation
+    functionalRuntime.extendsFrom testRuntime
+}
+
+idea {
+  module {
+    iml {
+      generateTo = file("$projectDir/.project/")
+    }
+    sourceDirs -= file("src/functional/groovy")
+    testSourceDirs += file("src/functional/groovy")
+    resourceDirs -= file("src/functional/resources")
+    testResourceDirs += file("src/functional/resources")
+  }
 }
 
 
@@ -56,6 +83,10 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.15.0")
     testImplementation("org.testcontainers:mongodb:1.15.0")
 
+    testImplementation("org.codehaus.groovy:groovy-all:2.5.13")
+    testImplementation("org.spockframework:spock-core:1.2-groovy-2.5"){
+      exclude group: "org.codehaus.groovy", module: "groovy-all"
+    }
 }
 
 test {
@@ -74,4 +105,13 @@ tasks.withType(Test) {
 tasks.withType(JavaExec) {
     jvmArgs += "--enable-preview"
 }
+
+task functionalTest(type: Test) {
+  description = "run functional tests in eventstore db"
+  testClassesDirs = sourceSets.functional.output.classesDirs
+  classpath = sourceSets.functional.runtimeClasspath
+  group = "verification"
+}
+
+// check.dependsOn functionalTest
 
