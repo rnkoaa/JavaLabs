@@ -27,6 +27,48 @@ public class MainActivity {
     return Try.of(() -> objectMapper().writeValueAsString(todo));
   }
 
+
+  /*
+  Match(i).of(
+    Case($(is(1)), 1.0),
+    Case($(is(2)), 2.0),
+    Case($(), o -> run(() -> {
+        throw new IllegalArgumentException();
+    }))
+  );
+   */
+
+  /*
+  final Integer result = Match(i).of(
+    // if i instanceof Object.class == true
+    Case($(instanceOf(Object.class)), i),
+    // if i is one of the elements
+    Case($(isIn(3, 4, 5)), 0),
+    // if i fulfills any of given predicates
+    Case($(anyOf(is(instanceOf(Integer.class)), isNull())), -1),
+    // if i fulfills all of given predicates
+    Case($(allOf(isNotNull(), isIn(6, 7, 8))), -2),
+    // In other case...
+    Case($(), -10)
+  );
+   */
+
+  /*
+  Match(tryInt).of(
+    // If tryInt is success and fulfills given predicate
+    Case($Success($(isIn(2, 3, 4, 5))), value -> {
+        System.out.println(value);
+        return value + 1;
+    }),
+    // if tryInt is only success
+    Case($Success($()), value -> value + 2),
+    // if tryInt is failure
+    Case($Failure($()), v -> {
+        System.out.println("Error");
+        return v;
+    })
+);
+   */
   static void useMatch() {
     // @formatter:off
     int item = 1;
