@@ -1,9 +1,12 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'org.richard.vavr.intro'
 version '1.0-SNAPSHOT'
+
+mainClassName = 'org.richard.vavr.intro.MainActivity'
 
 repositories {
     mavenLocal()
@@ -16,8 +19,12 @@ dependencies {
     testImplementation('org.junit.jupiter:junit-jupiter')
     testImplementation("org.assertj:assertj-core:3.18.1")
 
-    compileOnly('org.projectlombok:lombok:1.18.16')
-    annotationProcessor('org.projectlombok:lombok:1.18.16')
+//    compileOnly('org.projectlombok:lombok:1.18.16')
+//    annotationProcessor('org.projectlombok:lombok:1.18.16')
+
+
+    compileOnly 'org.immutables:value:2.8.8'
+    annotationProcessor 'org.immutables:value:2.8.8'
 
     implementation 'com.fasterxml.jackson.core:jackson-core:2.12.0'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.0'
