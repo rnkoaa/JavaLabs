@@ -1,0 +1,64 @@
+###
+POST http://localhost:8080/classified_ad
+
+{
+"classified_ad_id": "da31260e-b943-425f-8563-ddb6a911662d",
+"owner": "ae48b592-9526-4952-81fc-584af8a46565"
+}
+
+###
+PUT http://localhost:8080/classified_ad/da31260e-b943-425f-8563-ddb6a911662d/text
+Content-Type: application/json
+
+{
+  "text": "3.0GHz 6‑core 8th‑generation Intel Core i5 (Turbo Boost up to 4.1GHz)\n16GB 2666MHz DDR4\n512GB SSD storage\nIntel UHD Graphics630"
+}
+
+###
+PUT http://localhost:8080/classified_ad/da31260e-b943-425f-8563-ddb6a911662d/title
+Content-Type: application/json
+
+{
+  "title": "2020 Mac Mini 3.0GHz 6‑core 16GB 512GB SSD - $1,000 (Golden Valley)"
+}
+
+### / update price
+PUT http://localhost:8080/classified_ad/da31260e-b943-425f-8563-ddb6a911662d/price
+Content-Type: application/json
+
+{
+  "price": {
+    "amount": 10.51,
+    "currency_code": "USD"
+  }
+}
+
+### publish
+PUT http://localhost:8080/classified_ad/da31260e-b943-425f-8563-ddb6a911662d/publish
+Content-Type: application/json
+
+<> 2020-11-23T135753.500.html
+<> 2020-11-23T135625.500.html
+
+### approve
+PUT http://localhost:8080/classified_ad/da31260e-b943-425f-8563-ddb6a911662d/approve
+Content-Type: application/json
+
+{
+  "approver": "ae48b592-9526-4952-81fc-584af8a46565"
+}
+
+### approve
+PUT http://localhost:8080/classified_ad/da31260e-b943-425f-8563-ddb6a911662d/pictures
+Content-Type: application/json
+
+{
+  "pictures": [
+    {
+      "uri": "https://images.craigslist.org/00202_k2AKqVXJBZU_0CI0t2_1200x900.jpg",
+      "width": 800,
+      "height": 600
+    }
+  ]
+}
+

@@ -1,0 +1,76 @@
+[
+  {
+    "aggregateId": "da31260e-b943-425f-8563-ddb6a911662d",
+    "version": 0,
+    "aggregateName": "ClassifiedAd",
+    "createdAt": "2020-12-13T05:28:10.405341Z",
+    "type": "com.marketplace.domain.classifiedad.events.ImmutableClassifiedAdCreated",
+    "id": "8bf2a36d-049b-4d03-9e49-d3584df1a489",
+    "ownerId": "ae48b592-9526-4952-81fc-584af8a46565"
+  },
+  {
+    "aggregateId": "da31260e-b943-425f-8563-ddb6a911662d",
+    "version": 0,
+    "aggregateName": "ClassifiedAd",
+    "createdAt": "2020-12-13T05:28:10.409742Z",
+    "type": "com.marketplace.domain.classifiedad.events.ImmutableClassifiedAdTextUpdated",
+    "id": "9da73348-1b95-4e71-9e75-12375c35ca92",
+    "text": "3.0GHz 6‑core 8th‑generation Intel Core i5 (Turbo Boost up to 4.1GHz)\n16GB 2666MHz DDR4\n512GB SSD storage\nIntel UHD Graphics630"
+  },
+  {
+    "aggregateId": "da31260e-b943-425f-8563-ddb6a911662d",
+    "version": 0,
+    "aggregateName": "ClassifiedAd",
+    "createdAt": "2020-12-13T05:28:10.411318Z",
+    "type": "com.marketplace.domain.classifiedad.events.ImmutableClassifiedAdTitleChanged",
+    "id": "dcc68daf-9895-4bfd-b837-b191df59d218",
+    "title": "2020 Mac Mini 3.0GHz 6‑core 16GB 512GB SSD - $1,000 (Golden Valley)"
+  },
+  {
+    "aggregateId": "da31260e-b943-425f-8563-ddb6a911662d",
+    "version": 0,
+    "aggregateName": "ClassifiedAd",
+    "createdAt": "2020-12-13T05:28:10.413084Z",
+    "type": "com.marketplace.domain.classifiedad.events.ImmutableClassifiedAdPriceUpdated",
+    "id": "f4636849-7ff2-46f1-9ec8-31b5fc113d02",
+    "price": 10.51,
+    "currency": "USD"
+  },
+  {
+    "id": "900008ca-4578-4668-8a96-fa30a3ebcadb",
+    "aggregateId": "260bf5fc-75e3-46b4-8e6b-f080d0c61d82",
+    "version": 0,
+    "aggregateName": "ClassifiedAd",
+    "createdAt": "2020-12-13T05:28:10.415972Z",
+    "type": "com.marketplace.domain.classifiedad.events.ImmutablePictureAddedToAClassifiedAd",
+    "classifiedAdId": "260bf5fc-75e3-46b4-8e6b-f080d0c61d82",
+    "pictureId": "260bf5fc-75e3-46b4-8e6b-f080d0c61d82",
+    "url": "https://images.craigslist.org/00202_k2AKqVXJBZU_0CI0t2_1200x900.jpg",
+    "height": 600,
+    "width": 800,
+    "order": 0
+  },
+  {
+    "id": "900008ca-4578-4668-8a96-fa30a3ebcadb",
+    "aggregateId": "260bf5fc-75e3-46b4-8e6b-f080d0c61d82",
+    "version": 0,
+    "aggregateName": "ClassifiedAd",
+    "createdAt": "2020-12-13T05:28:59.415972Z",
+    "type": "com.marketplace.domain.classifiedad.events.ImmutableClassifiedAdPictureResized",
+    "classifiedAdId": "260bf5fc-75e3-46b4-8e6b-f080d0c61d82",
+    "pictureId": "260bf5fc-75e3-46b4-8e6b-f080d0c61d82",
+    "url": "https://images.craigslist.org/00202_k2AKqVXJBZU_0CI0t2_1200x900.jpg",
+    "height": 800,
+    "width": 900,
+    "order": 0
+  },
+  {
+    "aggregateId": "da31260e-b943-425f-8563-ddb6a911662d",
+    "version": 0,
+    "aggregateName": "ClassifiedAd",
+    "createdAt": "2020-12-13T05:28:10.418564Z",
+    "type": "com.marketplace.domain.classifiedad.events.ImmutableClassifiedApproved",
+    "id": "65343c1f-0788-480f-9899-cafabed54e26",
+    "userId": "ae48b592-9526-4952-81fc-584af8a46565"
+  }
+]

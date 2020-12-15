@@ -1,42 +1,94 @@
 package org.richard.vavr.intro;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.vavr.collection.List;
-import java.time.Instant;
-import java.util.Comparator;
+import java.util.Optional;
+import java.util.UUID;
+import org.immutables.value.Value;
 
 public class MainActivity {
 
   public static ObjectMapper objectMapper() {
-    return new ObjectMapper().findAndRegisterModules();
+    var objectMapper = new ObjectMapper().findAndRegisterModules();
+    objectMapper.setPropertyNamingStrategy(new PropertyNamingStrategies.SnakeCaseStrategy());
+
+    // Ignore null values when writing json.
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+    // Write times as a String instead of a Long so its human readable.
+    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//        objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE)
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.registerModule(new Jdk8Module());
+    return objectMapper;
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws JsonProcessingException {
 //    new Event.Builder()
     // useMatch();
-    List<Event> events =
-        List.of(
-            new Event.Builder().id(1).version(1L).name("Created").build(),
-            new Event.Builder().id(11).version(7L).name("TitleUpdated").createdAt(Instant.parse("2020-12-09T17:22:05.981538Z"))
-                .build(),
-            new Event.Builder().id(12).version(7L).name("UserApproved").createdAt(Instant.parse("2020-12-09T17:22:03.981537Z"))
-                .build(),
-            new Event.Builder().id(2).version(4L).name("ItemSold").createdAt(Instant.parse("2020-12-09T17:22:03.981535Z")).build(),
-            new Event.Builder().id(3).version(2L).name("TextUpdated").createdAt(Instant.parse("2020-12-07T17:22:05.981538Z")).build(),
-            new Event.Builder().id(4).version(3L).name("StateUpdated").createdAt(Instant.parse("2020-12-05T17:22:05.981538Z")).build(),
-            new Event.Builder().id(5).version(1L).name("TitleUpdated").createdAt(Instant.parse("2020-12-07T17:21:05.981538Z")).build(),
-            new Event.Builder().id(6).version(5L).name("TextUpdated").createdAt(Instant.parse("2020-12-07T17:21:02.981538Z")).build(),
-            new Event.Builder().id(7).version(1L).name("TitleUpdated").createdAt(Instant.parse("2020-12-06T17:21:05.981538Z")).build(),
-            new Event.Builder().id(10).version(1L).name("StateUpdated").createdAt(Instant.parse("2020-12-01T17:30:05.981538Z")).build()
-        );
+//    List<Event> events =
+//        List.of(
+//            new Event.Builder().id(1).version(1L).name("Created").build(),
+//            new Event.Builder().id(11).version(7L).name("TitleUpdated").createdAt(Instant.parse("2020-12-09T17:22:05.981538Z"))
+//                .build(),
+//            new Event.Builder().id(12).version(7L).name("UserApproved").createdAt(Instant.parse("2020-12-09T17:22:03.981537Z"))
+//                .build(),
+//            new Event.Builder().id(2).version(4L).name("ItemSold").createdAt(Instant.parse("2020-12-09T17:22:03.981535Z")).build(),
+//            new Event.Builder().id(3).version(2L).name("TextUpdated").createdAt(Instant.parse("2020-12-07T17:22:05.981538Z")).build(),
+//            new Event.Builder().id(4).version(3L).name("StateUpdated").createdAt(Instant.parse("2020-12-05T17:22:05.981538Z")).build(),
+//            new Event.Builder().id(5).version(1L).name("TitleUpdated").createdAt(Instant.parse("2020-12-07T17:21:05.981538Z")).build(),
+//            new Event.Builder().id(6).version(5L).name("TextUpdated").createdAt(Instant.parse("2020-12-07T17:21:02.981538Z")).build(),
+//            new Event.Builder().id(7).version(1L).name("TitleUpdated").createdAt(Instant.parse("2020-12-06T17:21:05.981538Z")).build(),
+//            new Event.Builder().id(10).version(1L).name("StateUpdated").createdAt(Instant.parse("2020-12-01T17:30:05.981538Z")).build()
+//        );
+//
+//    events = events.sorted(Comparator.comparing(Event::getVersion).thenComparing(Event::getCreatedAt));
+//    print(events);
+    String eventString = """
+        {
+          "classified_ad_id": "87a7fef0-1527-4a47-b196-504d9f9ce0fe",
+          "owner_id": "41feaaa5-b867-4359-9b77-d3d4955d6a83",
+          "title": "fake classified ad title",
+          "text": "fake classified ad"
+        }
+        """;
+    System.out.println(eventString);
 
-    events = events.sorted(Comparator.comparing(Event::getVersion).thenComparing(Event::getCreatedAt));
-    print(events);
+    CreateClassifiedEvent createClassifiedEvent = objectMapper().readValue(eventString, CreateClassifiedEvent.class);
+    System.out.println(createClassifiedEvent);
   }
 
   public static void print(List<Event> events) {
     events.forEach(System.out::println);
   }
+}
+
+@Value.Immutable
+@JsonDeserialize(as = ImmutableCreateClassifiedEvent.class)
+@JsonSerialize(as = ImmutableCreateClassifiedEvent.class)
+interface CreateClassifiedEvent {
+
+  @JsonProperty("classified_ad_id")
+  UUID getClassifiedAdId();
+
+  @JsonProperty("owner_id")
+  Optional<UUID> getOwnerId();
+
+  Optional<String> getTitle();
+
+  Optional<String> getText();
+
 }
 //
 //  private static Try<Todo> deserialize(String objectString) {

@@ -1,0 +1,104 @@
+plugins {
+    id 'java'
+    id 'application'
+    // which produces test fixtures
+    id 'java-test-fixtures'
+}
+
+/*
+buildscript {
+    classpath 'org.reflections:reflections:0.9.11'
+}
+task doReflectyStuff {
+    dependsOn compileJava
+    doLast {
+        URL[] urls = sourceSets.main.runtimeClasspath.files.collect {
+            it.toURI().toURL()
+        }
+        ClassLoader classLoader = new URLClassLoader(urls, null)
+        Configuration config = new ConfigurationBuilder("com.mypackage", classLoader)
+        Reflections reflections = new ReflectionsBuilder(config)
+        ...
+    }
+}
+ */
+mainClassName = 'com.richard.eventsourcing.MainApplication'
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.9.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.9.0")
+    implementation("org.apache.logging.log4j:log4j-api:2.9.0")
+
+
+    compileOnly 'org.immutables:value:2.8.8'
+    annotationProcessor 'org.immutables:value:2.8.8'
+
+    // some functional implementations
+    implementation 'io.projectreactor:reactor-core:3.4.0'
+    implementation('io.vavr:vavr:1.0.0-alpha-3')
+
+    // Runtime reflections
+    implementation("org.reflections:reflections:0.9.12")
+
+    implementation('org.mongodb:mongodb-driver-reactivestreams:4.1.1')
+
+    // 2.11.3
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+
+    testImplementation(platform("org.junit:junit-bom:${junitVersion}"))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testImplementation("org.assertj:assertj-core:${assertjVersion}")
+    testImplementation("org.mockito:mockito-core:${mockitoVersion}")
+    testImplementation("org.mockito:mockito-junit-jupiter:${mockitoVersion}")
+
+
+    // Implementation dependencies are not leaked to consumers when building
+    testFixturesImplementation 'org.immutables:value:2.8.8'
+    testFixturesAnnotationProcessor('org.immutables:value:2.8.8')
+    testFixturesImplementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    testFixturesImplementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    testFixturesImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    testFixturesImplementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
+    testFixturesImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    testFixturesImplementation('io.vavr:vavr:1.0.0-alpha-3')
+}
+
+/*
+ new org.reflections.Reflections("f.q.n")
+                        .save("${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.xml")
+ */
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += "--enable-preview"
+}
+tasks.withType(Test) {
+    jvmArgs += "--enable-preview"
+}
+tasks.withType(JavaExec) {
+    jvmArgs += "--enable-preview"
+}
